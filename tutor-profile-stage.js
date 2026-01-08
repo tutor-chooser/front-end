@@ -1,4 +1,3 @@
-<script>
 document.addEventListener("DOMContentLoaded", function () {
   const STRIPE_WORKER_URL = "https://tc-staging-stripe.tutorchooser.workers.dev/create-checkout-session";
   const FILE_UPLOAD_WORKER_URL = "https://tc-staging-file-upload.tutorchooser.workers.dev/";
@@ -1416,4 +1415,3 @@ async function createCheckoutSession(paymentType, button) {
     }
   });
 });
-</script>
