@@ -1,0 +1,202 @@
+/* 🎨 CUSTOMIZABLE THEME VARIABLES */
+        :root {
+            --brand-dark-blue: #031F33;
+            --brand-dark-red: #781212;
+            --brand-gold: #E5CB96;
+            --brand-white: #FFFFFF;
+            --container-bg: var(--brand-white);
+            --primary-text: var(--brand-dark-blue);
+            --border-color: #eef2f5;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+            --hover-bg: #f8fafc;
+            --status-accepted-bg: #E6F4EA;
+            --status-accepted-text: #34A853;
+            --status-rejected-bg: rgba(254, 226, 226, 1);
+            --status-rejected-text: #E53E3E;
+            --status-pending-bg: #f0f2f5;
+            --status-pending-text: #5a6a78;
+        }
+
+        /* --- BASE STYLES & DESKTOP TABLE --- */
+        .requests-table {
+            color: var(--primary-text);
+            background-color: var(--container-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+                    
+            .cell-value {
+                color: #98a9b8;
+                font-size: 14px;
+            }
+
+        .state-indicator {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 24px;
+            text-align: center;
+            color: #718096;
+            font-family: 'CambriaCustom', sans-serif;
+        }
+
+        .table-header, .table-row {
+            display: grid;
+            grid-template-columns: 1.5fr 1.5fr 1.5fr 2fr 2fr;
+            align-items: center;
+            text-align: center;
+        }
+
+        .card-body-grid, .card-column-left, .card-column-right {
+            display: contents;
+        }
+
+        .table-header {
+            padding: 16px 24px;
+            background-color: var(--brand-dark-blue);
+            color: var(--brand-gold);
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            font-family: 'TrajanproCustom', sans-serif;
+            letter-spacing: 0.8px;
+            text-align: center; 
+        }
+
+        .table-row {
+            padding: 8px 24px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+            font-family: 'CambriaCustom', sans-serif;
+        }
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        /* --- GENERAL COMPONENT STYLES --- */
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 80px;
+        }
+        .status-accepted { background-color: var(--status-accepted-bg); color: var(--status-accepted-text); }
+        .status-rejected { background-color: var(--status-rejected-bg); color: var(--status-rejected-text); }
+        .status-pending { background-color: var(--status-pending-bg); color: var(--status-pending-text); }
+
+        /* --- PAGINATION STYLES --- */
+        #pagination-controls {
+            display: flex;
+            justify-content: center;
+            padding: 24px 0;
+        }
+        #load-more-btn, #pagination-loader {
+            display: none;
+        }
+        #load-more-btn {
+            font-family: 'TrajanproCustom', sans-serif;
+            font-weight: 400;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            transition: all 0.2s ease-in-out;
+            background-color: transparent;
+            color: #031F33;
+            border: 2px solid #031F33;
+        }
+        #load-more-btn:hover {
+            background-color: #031F33;
+            color: #FFFFFF;
+        }
+        .loader {
+            border: 4px solid rgba(3, 31, 51, 0.1);
+            border-top-color: var(--brand-gold);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* ======================================= */
+        /* === MOBILE STYLES (for 2-column card) === */
+        /* ======================================= */
+        @media (max-width: 768px) {
+            .table-header { display: none; }
+            .requests-table { border: none; box-shadow: none; background-color: transparent; max-width: 100%; }
+
+            .table-row {
+                display: block;
+                padding: 18px;
+                margin-bottom: 16px;
+                border: 1px solid var(--border-color);
+            }
+
+            .card-body-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                padding-top: 12px;
+                border-top: 1px dashed var(--border-color);
+                margin-top: 12px;
+            }
+
+            .card-column-left, .card-column-right {
+                display: block;
+            }
+
+            .table-cell {
+                display: block;
+                padding: 0;
+                border-bottom: none;
+                text-align: left;
+            }
+
+            .card-column-left .table-cell:not(:last-child),
+            .card-column-right .table-cell:not(:last-child) {
+                margin-bottom: 24px;
+            }
+
+            .table-cell::before {
+                content: attr(data-label);
+                display: block;
+                font-size: 12px;
+                font-weight: 600;
+                color: #6b7280;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 4px;
+            }
+            
+            .cell-value {
+                display: block;
+                color: var(--brand-dark-blue);
+                font-size: 15px;
+                line-height: 1.4;
+            }
+            
+            .table-row > .table-cell[data-label="Meeting ID"] {
+                padding: 0 0 12px 0;
+            }
+            .table-cell[data-label="Meeting ID"]::before {
+                display: none;
+            }
+            .table-cell[data-label="Meeting ID"] .cell-value {
+                font-weight: 700;
+                font-size: 18px;
+                font-family: ui-monospace, Menlo, Monaco, "Courier New", monospace;
+            }
+        }
