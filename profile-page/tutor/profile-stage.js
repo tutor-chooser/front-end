@@ -126,7 +126,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 'STARTER_MONTHLY': 'Tutor Starter (Monthly)',
                 'STARTER_YEARLY': 'Tutor Starter (Yearly)',
                 'PRO_MONTHLY': 'Tutor Pro (Monthly)',
-                'PRO_YEARLY': 'Tutor Pro (Yearly)'
+                'PRO_YEARLY': 'Tutor Pro (Yearly)',
+                'FREE_PLAN': 'Free Plan' 
             };
             return map[raw] || raw;
         }
