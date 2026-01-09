@@ -1,7 +1,7 @@
 # Tutor Profile Management Script (`profile-stage.js`)
 
 ## Overview
-This script serves as the core controller for the Tutor Profile Dashboard. It orchestrates data synchronization between the frontend (Webflow), the backend (Monday.com), and the payment processor (Stripe). It utilizes a modular "Singleton" architecture to separate API logic, UI updates, and state management, ensuring a responsive and maintainable codebase.
+This script serves as the core controller for the Tutor Profile. It orchestrates data synchronization between the frontend (Webflow), the backend (Monday.com), and the payment processor (Stripe). It utilizes a modular "Singleton" architecture to separate API logic, UI updates, and state management, ensuring a responsive and maintainable codebase.
 
 ## High-Level Functionality Buckets
 
