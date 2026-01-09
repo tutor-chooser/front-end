@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
             earlyAdopterStatus: "color_mks2t0bh", progressPercent: "numeric_mks2r1s7",
             teachingLicenseFile: "file_mks2ekqg", qualificationsFile: "file_mks2nzg0",
             uaePoliceFile: "file_mks2vacv", emiratesIdFrontFile: "file_mks2qb9m",
-            emiratesIdBackFile: "file_mks2knah", emirID: "text_mks2h45f" 
+            emiratesIdBackFile: "file_mks2knah", emirID: "text_mks25drf" 
         },
         MONTHS: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     };
