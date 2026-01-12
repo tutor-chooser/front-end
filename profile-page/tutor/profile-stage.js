@@ -595,6 +595,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 '#online-tools',     // Online Tools
                 '#internet-stable',  // Stable Internet
                 '#webcam',           // Laptop Tech Setup
+                '#specialexp',
                 '#consent-mark'      // Marketing Consent
             ];
             
