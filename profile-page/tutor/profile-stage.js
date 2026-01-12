@@ -580,81 +580,51 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         },
         
-    validateVerify: () => {
-                 const required = [
-                    // Existing Fields
-                    '#First-name', '#Last-name', '#location-address-new', '#gender', '#prefix', 
-                    '#how-hear', '#nationality', '#lang-spoke', '#dob', '#uae-phone-4', '#tutor-mode', 
-                    '#bio', '#tutor-time-pre', '#first-aid', '#tutor-rate', '#consent-terms', '#emirID',
-                    '#qual-files', '#uae-police-files',
-                    
-                    // NEW FIELDS
-                    '#student-gen',      
-                    '#provider-2',       
-                    '#lang-teach',       
-                    '#online-tools',     
-                    '#internet-stable',  
-                    '#webcam',           
-                    '#specialexp',       // <--- Now explicitly checked
-                    '#consent-mark'      
-                ];
-                
-                let firstFail = null;
-                let count = 0;
-                
-                required.forEach(sel => {
-                    const el = document.querySelector(sel);
-                    if (!el) return;
-                    
-                    let valid = false;
-                    
-                    // Specific validation logic per type
-                    if (el.tagName === 'SELECT') {
-                        // For multiselects, check if any option is selected
-                        if (el.multiple) {
-                            valid = el.selectedOptions.length > 0;
-                        } else {
-                            valid = !!el.value;
-                        }
-                    } 
-                    else if (el.id.includes('files')) {
-                        valid = el.children.length > 0;
-                    } 
-                    else {
-                        valid = !!el.value.trim();
-                    }
+        validateVerify: () => {
+            const required = [
+                            // Existing Fields
+                            '#First-name', '#Last-name', '#location-address-new', '#gender', '#prefix', 
+                            '#how-hear', '#nationality', '#lang-spoke', '#dob', '#uae-phone-4', '#tutor-mode', 
+                            '#bio', '#tutor-time-pre', '#first-aid', '#tutor-rate', '#consent-terms', '#emirID',
+                            '#qual-files', '#uae-police-files',
+                            
+                            // NEW FIELDS
+                            '#student-gen',      
+                            '#provider-2',       
+                            '#lang-teach',       
+                            '#online-tools',     
+                            '#internet-stable',  
+                            '#webcam',           
+                            '#specialexp',       // <--- Now explicitly checked
+                            '#consent-mark'      
+                        ];
+                        
+            let firstFail = null;
+            let count = 0;
+            required.forEach(sel => {
+                const el = document.querySelector(sel);
+                if (!el) return;
+                let valid = false;
+                if (el.tagName === 'SELECT') valid = !!el.value;
+                else if (el.id.includes('files')) valid = el.children.length > 0;
+                else valid = !!el.value.trim();
 
-                    // Visual Error Marking
-                    if (el.classList.contains("select2-hidden-accessible")) {
-                         // Find the Select2 container (the visual part)
-                         const s2 = el.nextElementSibling?.querySelector('.select2-selection');
-                         if(s2) {
-                             s2.classList.toggle('tc-invalid', !valid);
-                         }
-                    } else {
-                        el.classList.toggle('tc-invalid', !valid);
-                    }
-                    
-                    if (!valid) { 
-                        count++; 
-                        if (!firstFail) firstFail = el; 
-                    }
-                });
-                
-                if (firstFail) {
-                    // If the first failure is a hidden Select2, scroll to its visible container instead
-                    if (firstFail.classList.contains("select2-hidden-accessible")) {
-                        const s2Container = firstFail.nextElementSibling;
-                        if (s2Container) s2Container.scrollIntoView({behavior:'smooth', block:'center'});
-                    } else {
-                        firstFail.scrollIntoView({behavior:'smooth', block:'center'});
-                    }
-                    
-                    Utils.showMessage(`Please complete ${count} missing fields.`, 'error');
-                    return false;
+                if (el.classList.contains("select2-hidden-accessible")) {
+                     const s2 = el.nextElementSibling?.querySelector('.select2-selection');
+                     if(s2) s2.classList.toggle('tc-invalid', !valid);
+                } else {
+                    el.classList.toggle('tc-invalid', !valid);
                 }
-                return true;
+                if (!valid) { count++; if (!firstFail) firstFail = el; }
+            });
+            if (firstFail) {
+                firstFail.scrollIntoView({behavior:'smooth',block:'center'});
+                Utils.showMessage(`Please complete ${count} missing fields.`, 'error');
+                return false;
             }
+            return true;
+        }
+    };
 
     /**
      * =============================================================================
