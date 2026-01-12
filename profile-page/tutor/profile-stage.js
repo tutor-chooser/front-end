@@ -401,6 +401,16 @@ document.addEventListener("DOMContentLoaded", function () {
             const licenseVerify = data?.[CONFIG.COLS.licenseVerify]?.text?.trim();
             show("license-badge", licenseVerify === "Verified by Bodruz");
 
+            const buyPlanSection = Utils.getElement("buy-plan");
+            if (buyPlanSection) {
+                 if (!isVerified) {
+                    buyPlanSection.style.display = "none";
+                 } else {
+                    // Assuming you want it shown if they are verified
+                    buyPlanSection.style.display = "block"; 
+                 }
+            }
+
             // Plan Visibility
             const planName = (data?.[CONFIG.COLS.planName]?.text || "").toUpperCase();
             const planPurchase = Utils.getElement("plan-purchase");
