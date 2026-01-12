@@ -785,6 +785,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 e.preventDefault();
                 verifyBtn.textContent = "Checking...";
                 const comp = await API.getCompletion(State.id);
+                
                 if (comp.tutorCompletion < 100) {
                     Forms.validateVerify();
                     verifyBtn.textContent = "Submit Profile";
@@ -792,7 +793,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 
                 // Simplified Payment/Submit flow
-                const paid = State.mondayData?.[C.feePaid]?.text?.toUpperCase() === "YES";
+                const paid = State.mondayData?.[CONFIG.COLS.feePaid]?.text?.toUpperCase() === "YES";
+                
                 const doSubmit = async () => {
                     verifyBtn.textContent = "Processing...";
                     try {
@@ -804,21 +806,49 @@ document.addEventListener("DOMContentLoaded", function () {
                         const d = await res.json();
                         if (d.url) window.location.href = d.url;
                         else if (d.success) { Utils.showMessage("Submitted!", 'success'); setTimeout(() => location.reload(), 2000); }
-                    } catch(e) { Utils.showMessage(e.message, 'error'); }
+                    } catch(e) { 
+                        Utils.showMessage(e.message, 'error'); 
+                        verifyBtn.textContent = "Submit Profile"; // Reset button on error
+                    }
                 };
 
                 // Trigger Modal
                 const modalId = paid ? 'resubmit-confirm' : 'payment-confirm';
                 const banner = document.getElementById(`${modalId}-banner`);
                 const overlay = document.getElementById(`${modalId}-overlay`);
+                
                 if (banner && overlay) {
-                    overlay.style.display = 'block'; banner.style.display = 'flex';
-                    banner.classList.add('visible'); overlay.classList.add('visible');
+                    // Show Modal
+                    overlay.style.display = 'block'; 
+                    banner.style.display = 'flex';
+                    banner.classList.add('visible'); 
+                    overlay.classList.add('visible');
+                    
                     const confirm = banner.querySelector('button[id^="confirm-"]');
                     const cancel = banner.querySelector('button[id^="cancel-"]');
-                    confirm.onclick = () => { overlay.style.display='none'; doSubmit(); };
-                    cancel.onclick = () => { overlay.style.display='none'; verifyBtn.textContent = "Submit Profile"; };
-                } else { doSubmit(); } 
+                    
+                    // Helper to close modal completely
+                    const closeModal = () => {
+                        overlay.style.display = 'none';
+                        banner.style.display = 'none';
+                        banner.classList.remove('visible');
+                        overlay.classList.remove('visible');
+                        verifyBtn.textContent = "Submit Profile";
+                    };
+
+                    confirm.onclick = () => { 
+                        // Hide modal UI but keep processing state
+                        overlay.style.display = 'none';
+                        banner.style.display = 'none';
+                        doSubmit(); 
+                    };
+                    
+                    cancel.onclick = () => { 
+                        closeModal();
+                    };
+                } else { 
+                    doSubmit(); 
+                } 
             });
         }
 
