@@ -138,6 +138,11 @@ document.addEventListener("DOMContentLoaded", function () {
      * API LAYER
      * =============================================================================
      */
+    /**
+     * =============================================================================
+     * API LAYER (Fixed File Uploads)
+     * =============================================================================
+     */
     const API = {
         async getToken() { return await window.$memberstackDom.getMemberCookie(); },
 
@@ -196,36 +201,53 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("ID-Number-Make", itemId);
             let hasFiles = false;
 
+            // 1. Handle Standard File Inputs (Emirates ID)
             const appendInput = (selector, key) => {
                 const el = document.querySelector(`${selector} input[type="file"], ${selector}`);
-                if (el?.files?.[0]) { formData.append(key, el.files[0]); hasFiles = true; }
+                if (el?.files?.[0]) { 
+                    formData.append(key, el.files[0]); 
+                    hasFiles = true; 
+                }
             };
 
             appendInput("#Emirates-ID-Front", "Emirates-ID-Front");
             appendInput("#Emirates-ID-Back-2", "Emirates-ID-Back-2");
 
+            // 2. Handle Multi-File Lists (Fix: Look at WINDOW object, not State)
             const groups = {
-                "Qualification": State.files.qualFiles,
-                "UAE-Police": State.files.uaePoliceFiles,
-                "Teaching-License": State.files.teachingLicenseFiles,
+                "Qualification": window.qualFiles || [], 
+                "UAE-Police": window.uaePoliceFiles || [],
+                "Teaching-License": window.teachingLicenseFiles || [],
             };
 
             for (const [key, files] of Object.entries(groups)) {
+                // Filter out files that are already on the server
                 const newFiles = (files || []).filter(f => !f.isFromServer);
+                
                 if (newFiles.length) {
-                    newFiles.forEach(f => formData.append(key, f));
+                    newFiles.forEach(f => {
+                        formData.append(key, f);
+                    });
                     hasFiles = true;
                 }
             }
 
-            if (!hasFiles) return { success: false, message: "No files." };
+            if (!hasFiles) {
+                console.log("No new files found to upload.");
+                return { success: false, message: "No files." };
+            }
 
-            const token = await API.getToken();
-            const res = await fetch(CONFIG.URLS.FILE_UPLOAD_WORKER, {
-                method: "POST", headers: { 'Authorization': token }, body: formData
-            });
-            if (!res.ok) throw new Error("Upload failed");
-            return { success: true };
+            try {
+                const token = await API.getToken();
+                const res = await fetch(CONFIG.URLS.FILE_UPLOAD_WORKER, {
+                    method: "POST", headers: { 'Authorization': token }, body: formData
+                });
+                if (!res.ok) throw new Error("Upload failed");
+                return { success: true };
+            } catch (err) {
+                console.error("Upload Error:", err);
+                return { success: false, error: err };
+            }
         },
 
         async waitForMemberStackId() {
