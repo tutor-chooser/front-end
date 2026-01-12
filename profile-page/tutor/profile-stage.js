@@ -298,6 +298,11 @@ document.addEventListener("DOMContentLoaded", function () {
      * UI LAYER (Fixed: Pricing Layout & All Banners)
      * =============================================================================
      */
+    /**
+     * =============================================================================
+     * UI LAYER (Fixed: Plan Badges Restored)
+     * =============================================================================
+     */
     const UI = {
         dom: {
             pageLoader: document.getElementById("page-loader"),
@@ -405,7 +410,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     
                     if (newPrice) {
                         const p = card.querySelector('.tc-price');
-                        // FIXED: Added flex-wrap: wrap; and white-space: nowrap; to badge
                         p.innerHTML = `
                             <div class="amount" style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0.6rem;font-family:'Trajanpro',serif;">
                                 <del style="opacity:0.6;font-size:1.2rem;color:var(--muted);">AED ${card.dataset.price}</del>
@@ -428,6 +432,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const locked = isVerified || submitted;
 
             const rawPlanName = (data?.[CONFIG.COLS.planName]?.text || "").trim();
+            const planNameUpper = rawPlanName.toUpperCase();
             const isVerificationFee = /verification\s*fee/i.test(rawPlanName);
             const hasPlan = !!rawPlanName && !isVerificationFee;
 
@@ -443,7 +448,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
 
-            // --- 3. BADGES ---
+            // --- 3. QUALIFICATION BADGES ---
             const show = (id, cond) => { const el = Utils.getElement(id); if (el) el.style.display = cond ? 'inline-block' : 'none'; };
             const qual = data?.[CONFIG.COLS.qualType]?.text?.trim();
             
@@ -459,10 +464,18 @@ document.addEventListener("DOMContentLoaded", function () {
             const licenseVerify = data?.[CONFIG.COLS.licenseVerify]?.text?.trim();
             show("license-badge", licenseVerify === "Verified by Bodruz");
 
-            // --- 4. BANNERS & MESSAGES ---
+            // --- 4. PLAN BADGES (RESTORED) ---
+            // "block" is usually better for these badges in Webflow layouts unless they are inline chips
+            const showPlanBadge = (id, cond) => { const el = Utils.getElement(id); if (el) el.style.display = cond ? 'block' : 'none'; };
+            
+            showPlanBadge("pro-badge", planNameUpper.includes("PRO"));
+            showPlanBadge("starter-badge", planNameUpper.includes("START"));
+            showPlanBadge("free-badge", planNameUpper.includes("FREE"));
+
+            // --- 5. BANNERS & MESSAGES ---
             const showBlock = (id, cond) => { const el = Utils.getElement(id); if (el) el.style.display = cond ? 'block' : 'none'; };
 
-            // "Profile Under Review" (Orange/Blue banner)
+            // "Profile Under Review"
             showBlock("verify-message-progress", submitted && !isVerified);
             
             // "You are Verified!" (Green banner - shows only if verified AND hasn't bought a plan yet)
@@ -475,21 +488,19 @@ document.addEventListener("DOMContentLoaded", function () {
             // Hide the progress bar wrapper if they are submitted/verified
             showBlock("progress-wrapper", !locked);
 
-            // --- 5. PLAN VISIBILITY LOGIC (STRICT) ---
+            // --- 6. PLAN VISIBILITY LOGIC (STRICT) ---
             const planPurchase = Utils.getElement("plan-purchase");
             
             if (planPurchase) {
-                const planName = rawPlanName.toUpperCase();
-
                 if (!isVerified) {
                     // CASE A: User is NOT verified -> HIDE
                     planPurchase.style.display = "none";
                 } else {
                     // CASE B: User IS verified -> CHECK CURRENT PLAN
-                    if (planName.includes("PRO")) {
+                    if (planNameUpper.includes("PRO")) {
                         planPurchase.style.display = "none";
                     } 
-                    else if (planName.includes("START") || planName.includes("FREE")) {
+                    else if (planNameUpper.includes("START") || planNameUpper.includes("FREE")) {
                         planPurchase.style.display = "block";
                         const freeBox = document.querySelector('.tc-plan[data-plan="free"]');
                         if (freeBox) freeBox.style.display = "none";
