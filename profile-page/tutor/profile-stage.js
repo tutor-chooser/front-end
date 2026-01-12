@@ -612,6 +612,11 @@ document.addEventListener("DOMContentLoaded", function () {
      * MAIN
      * =============================================================================
      */
+/**
+     * =============================================================================
+     * MAIN INITIALIZATION
+     * =============================================================================
+     */
     async function init() {
         UI.toggleLoader(true);
         const id = await API.waitForMemberStackId();
@@ -682,7 +687,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // -- MAPPINGS & SAVES --
-        // Mappings have been fully restored here
         Forms.setupSave("save-profile-basic", [
             { domId: "First-name", mondayId: C.firstName, type: 'text' }, { domId: "Last-name", mondayId: C.surname, type: 'text' },
             { domId: "prefix", mondayId: C.prefix, type: 'text' }, { domId: "gender", mondayId: C.gender, type: 'text' },
@@ -784,7 +788,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     } catch(e) { Utils.showMessage(e.message, 'error'); }
                 };
 
-                // Trigger Modal (Assuming modal HTML exists as per original script)
+                // Trigger Modal
                 const modalId = paid ? 'resubmit-confirm' : 'payment-confirm';
                 const banner = document.getElementById(`${modalId}-banner`);
                 const overlay = document.getElementById(`${modalId}-overlay`);
@@ -795,7 +799,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const cancel = banner.querySelector('button[id^="cancel-"]');
                     confirm.onclick = () => { overlay.style.display='none'; doSubmit(); };
                     cancel.onclick = () => { overlay.style.display='none'; verifyBtn.textContent = "Submit Profile"; };
-                } else { doSubmit(); } // Fallback if modal missing
+                } else { doSubmit(); } 
             });
         }
 
@@ -820,6 +824,24 @@ document.addEventListener("DOMContentLoaded", function () {
         setupStripe("btn-free-select", "FREE_PLAN");
         setupStripe("btn-pro-yearly", "PRO_YEARLY");
         setupStripe("btn-pro-monthly", "PRO_MONTHLY");
+
+        // -- LIVE VALIDATION CLEARING (Fixes stuck red boxes) --
+        const removeError = (e) => {
+            const el = e.target;
+            if (el.classList.contains('tc-invalid')) el.classList.remove('tc-invalid');
+            if (el.classList.contains('select2-hidden-accessible')) {
+                const s2 = el.nextElementSibling?.querySelector('.select2-selection');
+                if(s2) s2.classList.remove('tc-invalid');
+            }
+        };
+        document.body.addEventListener('input', removeError);
+        document.body.addEventListener('change', removeError);
+        // Special hook for Select2 via jQuery if available
+        if (window.jQuery) {
+            window.jQuery(document.body).on('select2:select', function(e) {
+                removeError({ target: e.target });
+            });
+        }
 
         // -- FINAL CLEANUP --
         if (window.location.search.includes("status=success")) Utils.showMessage("Payment successful!", 'success');
