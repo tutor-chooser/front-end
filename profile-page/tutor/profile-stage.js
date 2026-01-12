@@ -278,6 +278,11 @@ document.addEventListener("DOMContentLoaded", function () {
      * UI LAYER (DEBUG VERSION)
      * =============================================================================
      */
+    /**
+     * =============================================================================
+     * UI LAYER (Fixed: No red lines on load)
+     * =============================================================================
+     */
     const UI = {
         dom: {
             pageLoader: document.getElementById("page-loader"),
@@ -320,7 +325,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                 }
             } catch (e) {}
-            container.classList.toggle('tc-invalid', container.children.length === 0);
+            
+            // REMOVED: The line that auto-invalidated empty lists on load.
+            // Validation is now handled solely by the 'Submit' button logic.
         },
 
         updateCompletionBar: (percent = 0) => {
@@ -402,16 +409,10 @@ document.addEventListener("DOMContentLoaded", function () {
         updateLockAndBadges: () => {
             const data = State.mondayData;
             
-            // Debug: Print raw value of verified status
-            const rawStatus = data?.[CONFIG.COLS.verifiedStatus]?.text;
-            console.log("[DEBUG] Raw Verified Status from Monday:", rawStatus);
-
             // --- 1. DETERMINE STATUS ---
-            const isVerified = rawStatus?.toUpperCase() === "VERIFIED";
+            const isVerified = data?.[CONFIG.COLS.verifiedStatus]?.text?.toUpperCase() === "VERIFIED";
             const submitted = data?.[CONFIG.COLS.submitVerify]?.text?.toUpperCase() === "YES";
             const locked = isVerified || submitted;
-
-            console.log("[DEBUG] Calculated Flags:", { isVerified, submitted, locked });
 
             // --- 2. LOCK INPUTS ---
             [Utils.getElement("verif-info-section-new"), Utils.getElement("submit-section")].forEach(sec => {
@@ -441,40 +442,35 @@ document.addEventListener("DOMContentLoaded", function () {
             const licenseVerify = data?.[CONFIG.COLS.licenseVerify]?.text?.trim();
             show("license-badge", licenseVerify === "Verified by Bodruz");
 
-            // --- 4. PLAN VISIBILITY LOGIC ---
+            // --- 4. PLAN VISIBILITY LOGIC (STRICT) ---
             const planPurchase = Utils.getElement("plan-purchase");
-            console.log("[DEBUG] Found 'plan-purchase' element?", !!planPurchase);
             
             if (planPurchase) {
                 const planName = (data?.[CONFIG.COLS.planName]?.text || "").toUpperCase();
-                console.log("[DEBUG] Current Plan Name:", planName);
 
                 if (!isVerified) {
-                    console.log("[DEBUG] User NOT VERIFIED -> Hiding Plan Section");
+                    // CASE A: User is NOT verified -> HIDE
                     planPurchase.style.display = "none";
-                    console.log("[DEBUG] Plan Section Display Style is now:", planPurchase.style.display);
                 } else {
-                    console.log("[DEBUG] User IS VERIFIED -> Checking Plan Logic");
-                    
+                    // CASE B: User IS verified -> CHECK CURRENT PLAN
                     if (planName.includes("PRO")) {
-                        console.log("[DEBUG] User is PRO -> Hiding");
+                        // Already PRO -> HIDE (No upgrade path)
                         planPurchase.style.display = "none";
                     } 
                     else if (planName.includes("START") || planName.includes("FREE")) {
-                        console.log("[DEBUG] User is STARTER/FREE -> Showing Upgrade Options");
+                        // STARTER or FREE -> SHOW (Allow upgrade to Pro)
+                        // But hide the "Free" card since they already have it (or better)
                         planPurchase.style.display = "block";
                         const freeBox = document.querySelector('.tc-plan[data-plan="free"]');
                         if (freeBox) freeBox.style.display = "none";
                     } 
                     else {
-                        console.log("[DEBUG] User has NO PLAN -> Showing All Options");
+                        // NO PLAN (but Verified) -> SHOW ALL options
                         planPurchase.style.display = "block";
                         const freeBox = document.querySelector('.tc-plan[data-plan="free"]');
                         if (freeBox) freeBox.style.display = "block"; 
                     }
                 }
-            } else {
-                console.warn("[DEBUG] Could not find element with ID 'plan-purchase'. Check HTML IDs.");
             }
         }
     };
