@@ -308,6 +308,11 @@ document.addEventListener("DOMContentLoaded", function () {
      * UI LAYER (Fixed: All Banners, Badges & How-To Section Restored)
      * =============================================================================
      */
+/**
+     * =============================================================================
+     * UI LAYER (Fixed: Profile Photo Lock & All Features Restored)
+     * =============================================================================
+     */
     const UI = {
         dom: {
             pageLoader: document.getElementById("page-loader"),
@@ -441,7 +446,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const isVerificationFee = /verification\s*fee/i.test(rawPlanName);
             const hasPlan = !!rawPlanName && !isVerificationFee;
 
-            // --- 2. LOCK INPUTS ---
+            // --- 2. LOCK SECTIONS ---
             [Utils.getElement("verif-info-section-new"), Utils.getElement("submit-section")].forEach(sec => {
                 if (sec) {
                     sec.classList.toggle("locked", locked);
@@ -453,7 +458,35 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
 
-            // --- 3. QUALIFICATION BADGES ---
+            // --- 3. LOCK SPECIFIC FIELDS (Prefix, Name, Photo) ---
+            // Explicitly lock these fields in case they are outside the sections above
+            const specificFields = ["prefix", "First-name", "Last-name", "dob"];
+            specificFields.forEach(id => {
+                const el = Utils.getElement(id);
+                if (el) {
+                    el.disabled = locked;
+                    if(locked) {
+                        el.style.backgroundColor = "#f5f5f5";
+                        el.style.borderColor = "#ddd";
+                    }
+                }
+            });
+
+            // Lock Profile Image & Upload Button
+            const profileImage = document.getElementById("profile-image");
+            if (profileImage) {
+                profileImage.style.filter = locked ? "grayscale(100%)" : "none";
+                profileImage.style.opacity = locked ? "0.6" : "1";
+                profileImage.style.pointerEvents = locked ? "none" : "auto";
+            }
+            const profileUploadLink = document.querySelector(".ms-profile-upload");
+            if (profileUploadLink) {
+                profileUploadLink.style.pointerEvents = locked ? "none" : "auto";
+                profileUploadLink.style.opacity = locked ? "0.6" : "1";
+                profileUploadLink.title = locked ? "Profile updates are locked." : "";
+            }
+
+            // --- 4. QUALIFICATION BADGES ---
             const show = (id, cond) => { const el = Utils.getElement(id); if (el) el.style.display = cond ? 'inline-block' : 'none'; };
             const qual = data?.[CONFIG.COLS.qualType]?.text?.trim();
             
@@ -469,13 +502,13 @@ document.addEventListener("DOMContentLoaded", function () {
             const licenseVerify = data?.[CONFIG.COLS.licenseVerify]?.text?.trim();
             show("license-badge", licenseVerify === "Verified by Bodruz");
 
-            // --- 4. PLAN BADGES ---
+            // --- 5. PLAN BADGES ---
             const showPlanBadge = (id, cond) => { const el = Utils.getElement(id); if (el) el.style.display = cond ? 'block' : 'none'; };
             showPlanBadge("pro-badge", planNameUpper.includes("PRO"));
             showPlanBadge("starter-badge", planNameUpper.includes("START"));
             showPlanBadge("free-badge", planNameUpper.includes("FREE"));
 
-            // --- 5. BANNERS & MESSAGES ---
+            // --- 6. BANNERS & MESSAGES ---
             const showBlock = (id, cond) => { const el = Utils.getElement(id); if (el) el.style.display = cond ? 'block' : 'none'; };
 
             // "Profile Under Review"
@@ -491,10 +524,10 @@ document.addEventListener("DOMContentLoaded", function () {
             // Hide the progress bar wrapper if they are submitted/verified
             showBlock("progress-wrapper", !locked);
 
-            // NEW: Hide "How to Complete" section if submitted or verified
+            // Hide "How to Complete" section if submitted or verified
             showBlock("how-to-comp-section", !locked);
 
-            // --- 6. PLAN VISIBILITY LOGIC (STRICT) ---
+            // --- 7. PLAN VISIBILITY LOGIC (STRICT) ---
             const planPurchase = Utils.getElement("plan-purchase");
             
             if (planPurchase) {
