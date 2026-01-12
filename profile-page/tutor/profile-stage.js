@@ -595,7 +595,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             '#online-tools',     
                             '#internet-stable',  
                             '#webcam',           
-                            '#specialexp',       // <--- Now explicitly checked
+                            '#special-exp',       // <--- Now explicitly checked
                             '#consent-mark'      
                         ];
                         
