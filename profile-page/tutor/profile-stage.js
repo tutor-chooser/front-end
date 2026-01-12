@@ -303,6 +303,11 @@ document.addEventListener("DOMContentLoaded", function () {
      * UI LAYER (Fixed: Plan Badges Restored)
      * =============================================================================
      */
+/**
+     * =============================================================================
+     * UI LAYER (Fixed: All Banners, Badges & How-To Section Restored)
+     * =============================================================================
+     */
     const UI = {
         dom: {
             pageLoader: document.getElementById("page-loader"),
@@ -464,10 +469,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const licenseVerify = data?.[CONFIG.COLS.licenseVerify]?.text?.trim();
             show("license-badge", licenseVerify === "Verified by Bodruz");
 
-            // --- 4. PLAN BADGES (RESTORED) ---
-            // "block" is usually better for these badges in Webflow layouts unless they are inline chips
+            // --- 4. PLAN BADGES ---
             const showPlanBadge = (id, cond) => { const el = Utils.getElement(id); if (el) el.style.display = cond ? 'block' : 'none'; };
-            
             showPlanBadge("pro-badge", planNameUpper.includes("PRO"));
             showPlanBadge("starter-badge", planNameUpper.includes("START"));
             showPlanBadge("free-badge", planNameUpper.includes("FREE"));
@@ -487,6 +490,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Hide the progress bar wrapper if they are submitted/verified
             showBlock("progress-wrapper", !locked);
+
+            // NEW: Hide "How to Complete" section if submitted or verified
+            showBlock("how-to-comp-section", !locked);
 
             // --- 6. PLAN VISIBILITY LOGIC (STRICT) ---
             const planPurchase = Utils.getElement("plan-purchase");
