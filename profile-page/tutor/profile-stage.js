@@ -251,6 +251,11 @@ document.addEventListener("DOMContentLoaded", function () {
      * UI LAYER
      * =============================================================================
      */
+/**
+     * =============================================================================
+     * UI LAYER (DEBUG VERSION)
+     * =============================================================================
+     */
     const UI = {
         dom: {
             pageLoader: document.getElementById("page-loader"),
@@ -375,10 +380,16 @@ document.addEventListener("DOMContentLoaded", function () {
         updateLockAndBadges: () => {
             const data = State.mondayData;
             
+            // Debug: Print raw value of verified status
+            const rawStatus = data?.[CONFIG.COLS.verifiedStatus]?.text;
+            console.log("[DEBUG] Raw Verified Status from Monday:", rawStatus);
+
             // --- 1. DETERMINE STATUS ---
-            const isVerified = data?.[CONFIG.COLS.verifiedStatus]?.text?.toUpperCase() === "VERIFIED";
+            const isVerified = rawStatus?.toUpperCase() === "VERIFIED";
             const submitted = data?.[CONFIG.COLS.submitVerify]?.text?.toUpperCase() === "YES";
             const locked = isVerified || submitted;
+
+            console.log("[DEBUG] Calculated Flags:", { isVerified, submitted, locked });
 
             // --- 2. LOCK INPUTS ---
             [Utils.getElement("verif-info-section-new"), Utils.getElement("submit-section")].forEach(sec => {
@@ -409,36 +420,39 @@ document.addEventListener("DOMContentLoaded", function () {
             show("license-badge", licenseVerify === "Verified by Bodruz");
 
             // --- 4. PLAN VISIBILITY LOGIC ---
-            // STRICT RULE: If NOT Verified, HIDE 'plan-purchase' section completely.
             const planPurchase = Utils.getElement("plan-purchase");
+            console.log("[DEBUG] Found 'plan-purchase' element?", !!planPurchase);
             
             if (planPurchase) {
                 const planName = (data?.[CONFIG.COLS.planName]?.text || "").toUpperCase();
+                console.log("[DEBUG] Current Plan Name:", planName);
 
                 if (!isVerified) {
-                    // CASE A: User is NOT verified -> HIDE
+                    console.log("[DEBUG] User NOT VERIFIED -> Hiding Plan Section");
                     planPurchase.style.display = "none";
+                    console.log("[DEBUG] Plan Section Display Style is now:", planPurchase.style.display);
                 } else {
-                    // CASE B: User IS verified -> CHECK CURRENT PLAN
+                    console.log("[DEBUG] User IS VERIFIED -> Checking Plan Logic");
+                    
                     if (planName.includes("PRO")) {
-                        // Already PRO -> HIDE (No upgrade path)
+                        console.log("[DEBUG] User is PRO -> Hiding");
                         planPurchase.style.display = "none";
                     } 
                     else if (planName.includes("START") || planName.includes("FREE")) {
-                        // STARTER or FREE -> SHOW (Allow upgrade to Pro)
-                        // But hide the "Free" card since they already have it (or better)
+                        console.log("[DEBUG] User is STARTER/FREE -> Showing Upgrade Options");
                         planPurchase.style.display = "block";
                         const freeBox = document.querySelector('.tc-plan[data-plan="free"]');
                         if (freeBox) freeBox.style.display = "none";
                     } 
                     else {
-                        // NO PLAN (but Verified) -> SHOW ALL options
+                        console.log("[DEBUG] User has NO PLAN -> Showing All Options");
                         planPurchase.style.display = "block";
-                        // Ensure Free box is visible if it was previously hidden
                         const freeBox = document.querySelector('.tc-plan[data-plan="free"]');
                         if (freeBox) freeBox.style.display = "block"; 
                     }
                 }
+            } else {
+                console.warn("[DEBUG] Could not find element with ID 'plan-purchase'. Check HTML IDs.");
             }
         }
     };
