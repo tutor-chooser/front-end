@@ -246,6 +246,11 @@ document.addEventListener("DOMContentLoaded", function () {
      * UI LAYER
      * =============================================================================
      */
+/**
+     * =============================================================================
+     * UI LAYER
+     * =============================================================================
+     */
     const UI = {
         dom: {
             pageLoader: document.getElementById("page-loader"),
@@ -369,11 +374,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
         updateLockAndBadges: () => {
             const data = State.mondayData;
+            
+            // --- 1. CHECK VERIFICATION STATUS ---
+            // This reads the column: color_mks24exj
             const isVerified = data?.[CONFIG.COLS.verifiedStatus]?.text?.toUpperCase() === "VERIFIED";
+            
             const submitted = data?.[CONFIG.COLS.submitVerify]?.text?.toUpperCase() === "YES";
             const locked = isVerified || submitted;
 
-            // Lock Sections
+            // --- 2. HIDE/SHOW BUY PLAN SECTION ---
+            // If strictly NOT verified, we hide the section.
+            const buyPlanSection = Utils.getElement("buy-plan");
+            if (buyPlanSection) {
+                if (!isVerified) {
+                    buyPlanSection.style.display = "none";
+                } else {
+                    // Only show if verified
+                    buyPlanSection.style.display = "block";
+                }
+            }
+
+            // --- 3. LOCK INPUTS IF SUBMITTED/VERIFIED ---
             [Utils.getElement("verif-info-section-new"), Utils.getElement("submit-section")].forEach(sec => {
                 if (sec) {
                     sec.classList.toggle("locked", locked);
@@ -385,7 +406,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
 
-            // Badges
+            // --- 4. BADGES ---
             const show = (id, cond) => { const el = Utils.getElement(id); if (el) el.style.display = cond ? 'inline-block' : 'none'; };
             const qual = data?.[CONFIG.COLS.qualType]?.text?.trim();
             
@@ -401,17 +422,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const licenseVerify = data?.[CONFIG.COLS.licenseVerify]?.text?.trim();
             show("license-badge", licenseVerify === "Verified by Bodruz");
 
-            const buyPlanSection = Utils.getElement("buy-plan");
-            if (buyPlanSection) {
-                 if (!isVerified) {
-                    buyPlanSection.style.display = "none";
-                 } else {
-                    // Assuming you want it shown if they are verified
-                    buyPlanSection.style.display = "block"; 
-                 }
-            }
-
-            // Plan Visibility
+            // --- 5. LEGACY PLAN VISIBILITY (Optional, depending on your HTML) ---
             const planName = (data?.[CONFIG.COLS.planName]?.text || "").toUpperCase();
             const planPurchase = Utils.getElement("plan-purchase");
             if (planPurchase) {
