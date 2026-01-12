@@ -288,6 +288,11 @@ document.addEventListener("DOMContentLoaded", function () {
      * UI LAYER (Fixed: Added Banner Logic)
      * =============================================================================
      */
+    /**
+     * =============================================================================
+     * UI LAYER (Fixed: All Banners & Messages Restored)
+     * =============================================================================
+     */
     const UI = {
         dom: {
             pageLoader: document.getElementById("page-loader"),
@@ -411,10 +416,14 @@ document.addEventListener("DOMContentLoaded", function () {
         updateLockAndBadges: () => {
             const data = State.mondayData;
             
-            // --- 1. DETERMINE STATUS ---
+            // --- 1. DETERMINE STATUS & PLAN ---
             const isVerified = data?.[CONFIG.COLS.verifiedStatus]?.text?.toUpperCase() === "VERIFIED";
             const submitted = data?.[CONFIG.COLS.submitVerify]?.text?.toUpperCase() === "YES";
             const locked = isVerified || submitted;
+
+            const rawPlanName = (data?.[CONFIG.COLS.planName]?.text || "").trim();
+            const isVerificationFee = /verification\s*fee/i.test(rawPlanName);
+            const hasPlan = !!rawPlanName && !isVerificationFee;
 
             // --- 2. LOCK INPUTS ---
             [Utils.getElement("verif-info-section-new"), Utils.getElement("submit-section")].forEach(sec => {
@@ -444,22 +453,33 @@ document.addEventListener("DOMContentLoaded", function () {
             const licenseVerify = data?.[CONFIG.COLS.licenseVerify]?.text?.trim();
             show("license-badge", licenseVerify === "Verified by Bodruz");
 
-            // --- 4. BANNER LOGIC (RESTORED) ---
-            const progressMessage = Utils.getElement("verify-message-progress");
-            if (progressMessage) {
-                // Show ONLY if submitted but NOT yet verified
-                progressMessage.style.display = (submitted && !isVerified) ? "block" : "none";
-            }
+            // --- 4. BANNERS & MESSAGES (RESTORED) ---
+            const showBlock = (id, cond) => { const el = Utils.getElement(id); if (el) el.style.display = cond ? 'block' : 'none'; };
+
+            // "Profile Under Review" (Orange/Blue banner)
+            showBlock("verify-message-progress", submitted && !isVerified);
+            
+            // "You are Verified!" (Green banner - shows only if verified AND hasn't bought a plan yet)
+            showBlock("verify-message", isVerified && !hasPlan);
+
+            // "Profile Locked" messages
+            showBlock("locked-message", isVerified);
+            showBlock("locked-message-waiting", submitted && !isVerified);
+
+            // Hide the progress bar wrapper if they are submitted/verified
+            showBlock("progress-wrapper", !locked);
 
             // --- 5. PLAN VISIBILITY LOGIC (STRICT) ---
             const planPurchase = Utils.getElement("plan-purchase");
             
             if (planPurchase) {
-                const planName = (data?.[CONFIG.COLS.planName]?.text || "").toUpperCase();
+                const planName = rawPlanName.toUpperCase();
 
                 if (!isVerified) {
+                    // CASE A: User is NOT verified -> HIDE
                     planPurchase.style.display = "none";
                 } else {
+                    // CASE B: User IS verified -> CHECK CURRENT PLAN
                     if (planName.includes("PRO")) {
                         planPurchase.style.display = "none";
                     } 
