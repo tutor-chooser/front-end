@@ -462,6 +462,11 @@ document.addEventListener("DOMContentLoaded", function () {
      * FORMS
      * =============================================================================
      */
+/**
+     * =============================================================================
+     * FORMS (Updated Validation Logic)
+     * =============================================================================
+     */
     const Forms = {
         Parsers: {
             text: (el) => el.value.trim(),
@@ -559,11 +564,22 @@ document.addEventListener("DOMContentLoaded", function () {
         
         validateVerify: () => {
              const required = [
+                // Existing Fields
                 '#First-name', '#Last-name', '#location-address-new', '#gender', '#prefix', 
                 '#how-hear', '#nationality', '#lang-spoke', '#dob', '#uae-phone-4', '#tutor-mode', 
                 '#bio', '#tutor-time-pre', '#first-aid', '#tutor-rate', '#consent-terms', '#emirID',
-                '#qual-files', '#uae-police-files'
+                '#qual-files', '#uae-police-files',
+                
+                // NEW FIELDS ADDED HERE
+                '#student-gen',      // Preferred Teaching Gender
+                '#provider-2',       // Provider Type
+                '#lang-teach',       // Languages to Teach In
+                '#online-tools',     // Online Tools
+                '#internet-stable',  // Stable Internet
+                '#webcam',           // Laptop Tech Setup
+                '#consent-mark'      // Marketing Consent
             ];
+            
             let firstFail = null;
             let count = 0;
             required.forEach(sel => {
