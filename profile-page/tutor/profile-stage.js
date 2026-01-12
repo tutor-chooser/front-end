@@ -246,6 +246,11 @@ document.addEventListener("DOMContentLoaded", function () {
      * UI LAYER
      * =============================================================================
      */
+/**
+     * =============================================================================
+     * UI LAYER
+     * =============================================================================
+     */
     const UI = {
         dom: {
             pageLoader: document.getElementById("page-loader"),
@@ -369,11 +374,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         updateLockAndBadges: () => {
             const data = State.mondayData;
+            
+            // --- 1. DETERMINE STATUS ---
             const isVerified = data?.[CONFIG.COLS.verifiedStatus]?.text?.toUpperCase() === "VERIFIED";
             const submitted = data?.[CONFIG.COLS.submitVerify]?.text?.toUpperCase() === "YES";
             const locked = isVerified || submitted;
 
-            // Lock Sections
+            // --- 2. LOCK INPUTS ---
             [Utils.getElement("verif-info-section-new"), Utils.getElement("submit-section")].forEach(sec => {
                 if (sec) {
                     sec.classList.toggle("locked", locked);
@@ -385,7 +392,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
 
-            // Badges
+            // --- 3. BADGES ---
             const show = (id, cond) => { const el = Utils.getElement(id); if (el) el.style.display = cond ? 'inline-block' : 'none'; };
             const qual = data?.[CONFIG.COLS.qualType]?.text?.trim();
             
@@ -401,17 +408,36 @@ document.addEventListener("DOMContentLoaded", function () {
             const licenseVerify = data?.[CONFIG.COLS.licenseVerify]?.text?.trim();
             show("license-badge", licenseVerify === "Verified by Bodruz");
 
-            // Plan Visibility
-            const planName = (data?.[CONFIG.COLS.planName]?.text || "").toUpperCase();
+            // --- 4. PLAN VISIBILITY LOGIC ---
+            // STRICT RULE: If NOT Verified, HIDE 'plan-purchase' section completely.
             const planPurchase = Utils.getElement("plan-purchase");
+            
             if (planPurchase) {
-                if (planName.includes("PRO")) planPurchase.style.display = "none";
-                else if (planName.includes("START") || planName.includes("FREE")) {
-                    planPurchase.style.display = "block";
-                    const freeBox = document.querySelector('.tc-plan[data-plan="free"]');
-                    if (freeBox) freeBox.style.display = "none";
-                } else if (isVerified) {
-                    planPurchase.style.display = "block";
+                const planName = (data?.[CONFIG.COLS.planName]?.text || "").toUpperCase();
+
+                if (!isVerified) {
+                    // CASE A: User is NOT verified -> HIDE
+                    planPurchase.style.display = "none";
+                } else {
+                    // CASE B: User IS verified -> CHECK CURRENT PLAN
+                    if (planName.includes("PRO")) {
+                        // Already PRO -> HIDE (No upgrade path)
+                        planPurchase.style.display = "none";
+                    } 
+                    else if (planName.includes("START") || planName.includes("FREE")) {
+                        // STARTER or FREE -> SHOW (Allow upgrade to Pro)
+                        // But hide the "Free" card since they already have it (or better)
+                        planPurchase.style.display = "block";
+                        const freeBox = document.querySelector('.tc-plan[data-plan="free"]');
+                        if (freeBox) freeBox.style.display = "none";
+                    } 
+                    else {
+                        // NO PLAN (but Verified) -> SHOW ALL options
+                        planPurchase.style.display = "block";
+                        // Ensure Free box is visible if it was previously hidden
+                        const freeBox = document.querySelector('.tc-plan[data-plan="free"]');
+                        if (freeBox) freeBox.style.display = "block"; 
+                    }
                 }
             }
         }
