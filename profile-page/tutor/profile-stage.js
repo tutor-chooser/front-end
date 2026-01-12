@@ -293,6 +293,11 @@ document.addEventListener("DOMContentLoaded", function () {
      * UI LAYER (Fixed: All Banners & Messages Restored)
      * =============================================================================
      */
+/**
+     * =============================================================================
+     * UI LAYER (Fixed: Pricing Layout & All Banners)
+     * =============================================================================
+     */
     const UI = {
         dom: {
             pageLoader: document.getElementById("page-loader"),
@@ -400,11 +405,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     
                     if (newPrice) {
                         const p = card.querySelector('.tc-price');
+                        // FIXED: Added flex-wrap: wrap; and white-space: nowrap; to badge
                         p.innerHTML = `
-                            <div class="amount" style="display:flex;align-items:baseline;justify-content:center;gap:0.6rem;font-family:'Trajanpro',serif;">
+                            <div class="amount" style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0.6rem;font-family:'Trajanpro',serif;">
                                 <del style="opacity:0.6;font-size:1.2rem;color:var(--muted);">AED ${card.dataset.price}</del>
                                 <span style="font-size:1.8rem;font-weight:800;color:var(--ink);">AED ${newPrice}</span>
-                                <div class="badge" style="background-color:#d1e7dd;color:#0f5132;border-radius:99px;padding:.25rem .55rem;font-size:0.75rem;">${badgeText}</div>
+                                <div class="badge" style="background-color:#d1e7dd;color:#0f5132;border-radius:99px;padding:.25rem .55rem;font-size:0.75rem;white-space:nowrap;">${badgeText}</div>
                             </div>`;
                         const per = card.querySelector('.per');
                         if (per) per.style.display = 'none';
@@ -453,7 +459,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const licenseVerify = data?.[CONFIG.COLS.licenseVerify]?.text?.trim();
             show("license-badge", licenseVerify === "Verified by Bodruz");
 
-            // --- 4. BANNERS & MESSAGES (RESTORED) ---
+            // --- 4. BANNERS & MESSAGES ---
             const showBlock = (id, cond) => { const el = Utils.getElement(id); if (el) el.style.display = cond ? 'block' : 'none'; };
 
             // "Profile Under Review" (Orange/Blue banner)
