@@ -854,7 +854,7 @@ document.addEventListener("DOMContentLoaded", function () {
             { domId: "int-phone-4", mondayId: C.intPhone, type: 'phone', phoneElementSelector: '#int-phone-4' },
             { domId: "nationality", mondayId: C.nationality, type: 'multiselect' }, { domId: "lang-spoke", mondayId: C.languageSpoke, type: 'multiselect' },
             { domId: "ref-code", mondayId: C.tutorIdV1, type: 'text' }
-        ], "Personal Info Saved!");
+        ], "Personal Information Saved!");
 
         Forms.setupSave("save-profile-teacher", [
             { domId: "tutor-mode", mondayId: C.tutorMode, type: 'text' }, { domId: "provider-2", mondayId: C.providerType, type: 'text' },
@@ -862,22 +862,22 @@ document.addEventListener("DOMContentLoaded", function () {
             { domId: "student-gen", mondayId: C.pregen, type: 'text' }, { domId: "tutor-rate", mondayId: C.rate, type: 'text' },
             { domId: "rate-nego", mondayId: C.negorate, type: 'text' }, { domId: "tutor-time-pre", mondayId: C.tutorTime, type: 'multiselect' },
             { domId: "lang-teach", mondayId: C.language, type: 'multiselect' }, { domId: "special-exp", mondayId: C.specialexp, type: 'multiselect' }
-        ], "Teaching Info Saved!");
+        ], "Teaching Information Saved!");
 
         Forms.setupSave("save-profile-emer", [
             { domId: "Emergency-Relation", mondayId: C.emerRelation, type: 'text' },
             { domId: "Emergency-Name", mondayId: C.emerName, type: 'text' },
             { domId: "emer-phone-3", mondayId: C.emerPhone, type: 'phone', phoneElementSelector: '#emer-phone-3' }
-        ], "Emergency Info Saved!");
+        ], "Emergency Information Saved!");
 
         Forms.setupSave("save-profile-tech", [
              { domId: "internet-stable", mondayId: C.stableInternet, type: 'text' }, { domId: "webcam", mondayId: C.webcam, type: 'text' },
              { domId: "online-tools", mondayId: C.onlineTool, type: 'multiselect' }
-        ], "Tech Info Saved!");
+        ], "Technology Information Saved!");
 
         Forms.setupSave("save-profile-consent", [
             { domId: "consent-terms", mondayId: C.privacyConsent, type: 'consent' }, { domId: "consent-mark", mondayId: C.marketingConsent, type: 'consent' }
-        ], "Consent Saved!");
+        ], "Consent Information Saved!");
 
         // -- SAVE ID BUTTON (Special Logic) --
         const saveIdBtn = Utils.getElement("save-profile-id");
