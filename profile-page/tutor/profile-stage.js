@@ -283,6 +283,11 @@ document.addEventListener("DOMContentLoaded", function () {
      * UI LAYER (Fixed: No red lines on load)
      * =============================================================================
      */
+    /**
+     * =============================================================================
+     * UI LAYER (Fixed: Added Banner Logic)
+     * =============================================================================
+     */
     const UI = {
         dom: {
             pageLoader: document.getElementById("page-loader"),
@@ -325,9 +330,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                 }
             } catch (e) {}
-            
-            // REMOVED: The line that auto-invalidated empty lists on load.
-            // Validation is now handled solely by the 'Submit' button logic.
         },
 
         updateCompletionBar: (percent = 0) => {
@@ -442,30 +444,31 @@ document.addEventListener("DOMContentLoaded", function () {
             const licenseVerify = data?.[CONFIG.COLS.licenseVerify]?.text?.trim();
             show("license-badge", licenseVerify === "Verified by Bodruz");
 
-            // --- 4. PLAN VISIBILITY LOGIC (STRICT) ---
+            // --- 4. BANNER LOGIC (RESTORED) ---
+            const progressMessage = Utils.getElement("verify-message-progress");
+            if (progressMessage) {
+                // Show ONLY if submitted but NOT yet verified
+                progressMessage.style.display = (submitted && !isVerified) ? "block" : "none";
+            }
+
+            // --- 5. PLAN VISIBILITY LOGIC (STRICT) ---
             const planPurchase = Utils.getElement("plan-purchase");
             
             if (planPurchase) {
                 const planName = (data?.[CONFIG.COLS.planName]?.text || "").toUpperCase();
 
                 if (!isVerified) {
-                    // CASE A: User is NOT verified -> HIDE
                     planPurchase.style.display = "none";
                 } else {
-                    // CASE B: User IS verified -> CHECK CURRENT PLAN
                     if (planName.includes("PRO")) {
-                        // Already PRO -> HIDE (No upgrade path)
                         planPurchase.style.display = "none";
                     } 
                     else if (planName.includes("START") || planName.includes("FREE")) {
-                        // STARTER or FREE -> SHOW (Allow upgrade to Pro)
-                        // But hide the "Free" card since they already have it (or better)
                         planPurchase.style.display = "block";
                         const freeBox = document.querySelector('.tc-plan[data-plan="free"]');
                         if (freeBox) freeBox.style.display = "none";
                     } 
                     else {
-                        // NO PLAN (but Verified) -> SHOW ALL options
                         planPurchase.style.display = "block";
                         const freeBox = document.querySelector('.tc-plan[data-plan="free"]');
                         if (freeBox) freeBox.style.display = "block"; 
