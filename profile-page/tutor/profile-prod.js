@@ -855,14 +855,22 @@ document.addEventListener("DOMContentLoaded", function () {
         f("ref-code", d[C.tutorIdV1]?.text);
         f("tutor-uni-id", d[C.tutorUniID]?.text);
 
-        // 1. Plan Name (Formatted to be readable)
-        f("plan_name", Utils.formatPlanName(d[C.planName]?.text));
+        const rawPlanName = d[C.planName]?.text;
 
-        // 2. Expiry Date (Formatted to DD Month YYYY)
+        // 1. Plan Name
+        f("plan_name", Utils.formatPlanName(rawPlanName));
+
+        // 2. Expiry Date
         f("plan_expir", Utils.formatDateFromMonday(d[C.planEnd]?.value?.date));
 
-        // 3. Status (Using Verified Status column, change C.verifiedStatus to C.feePaid if preferred)
-        f("plan_status", d[C.verifiedStatus]?.text);
+        // 3. Status Logic
+        // Condition: If rawPlanName exists and isn't empty -> "Active"
+        // Otherwise -> Revert to "-" (do NOT use verifiedStatus)
+        if (rawPlanName && rawPlanName.trim().length > 0) {
+            f("plan_status", "Active");
+        } else {
+            f("plan_status", "-");
+        }
         
         const approvalCheck = Utils.getElement("approval-check");
         if (approvalCheck) approvalCheck.checked = (d[C.approvalConfirm]?.text?.trim().toUpperCase() === "YES");
