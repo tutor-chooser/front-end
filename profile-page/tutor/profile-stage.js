@@ -550,6 +550,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // --- 7. PLAN VISIBILITY LOGIC (STRICT) ---
             const planPurchase = Utils.getElement("plan-purchase");
+
+            const upgradeTitle = Utils.getElement("upgrade-plan-title");
+            const normalTitle = Utils.getElement("normal-title");
+
+            if (upgradeTitle || normalTitle) {
+                // Check if plan contains "FREE" or "START"
+                // (This means they need to see the Upgrade message)
+                const showUpgrade = planNameUpper.includes("FREE") || planNameUpper.includes("START");
+                
+                if (upgradeTitle) {
+                    upgradeTitle.style.display = showUpgrade ? "block" : "none";
+                }
+                
+                if (normalTitle) {
+                    normalTitle.style.display = showUpgrade ? "none" : "block";
+                }
+            }
             
             if (planPurchase) {
                 if (!isVerified) {
