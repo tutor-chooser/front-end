@@ -691,58 +691,58 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         },
         
-        validateVerify: () => {
-            // 1. Define fields with their IDs and Human-Readable Labels
-            const fields = [
-                // --- Personal Info ---
-                { sel: '#prefix', label: 'Prefix' },
-                { sel: '#First-name', label: 'First Name' },
-                { sel: '#Last-name', label: 'Last Name' },
-                { sel: '#location-address-new', label: 'Location' },
-                { sel: '#gender', label: 'Gender' },
-                { sel: '#how-hear', label: 'How did you hear about us' },
-                { sel: '#nationality', label: 'Nationality' },
-                { sel: '#lang-spoke', label: 'Languages Spoken' },
-                { sel: '#dob', label: 'Date of Birth' },
-                { sel: '#uae-phone-4', label: 'UAE Phone' },
+    validateVerify: () => {
+                // 1. Define fields with their IDs and Human-Readable Labels
+                const fields = [
+                    // --- Personal Info ---
+                    { sel: '#prefix', label: 'Prefix' },
+                    { sel: '#First-name', label: 'First Name' },
+                    { sel: '#Last-name', label: 'Last Name' },
+                    { sel: '#location-address-new', label: 'Location' },
+                    { sel: '#gender', label: 'Gender' },
+                    { sel: '#how-hear', label: 'How did you hear about us' },
+                    { sel: '#nationality', label: 'Nationality' },
+                    { sel: '#lang-spoke', label: 'Languages Spoken' },
+                    { sel: '#dob', label: 'Date of Birth' },
+                    { sel: '#uae-phone-4', label: 'UAE Phone' },
 
-                // --- Teaching Info ---
-                { sel: '#tutor-mode', label: 'Tutor Mode' },
-                { sel: '#bio', label: 'Bio' },
-                { sel: '#tutor-time-pre', label: 'Tutoring Times' },
-                { sel: '#provider-2', label: 'Provider Type' },
-                { sel: '#lang-teach', label: 'Languages Taught' },
-                { sel: '#student-gen', label: 'Student Gender Preference' },
-                { sel: '#first-aid', label: 'First Aid Training' },
-                { sel: '#tutor-rate', label: 'Hourly Rate' },
-                { sel: '#special-exp', label: 'Special Experience' },
-                { sel: '#rate-nego', label: 'Price Negotiable' },
+                    // --- Teaching Info ---
+                    { sel: '#tutor-mode', label: 'Tutor Mode' },
+                    { sel: '#bio', label: 'Bio' },
+                    { sel: '#tutor-time-pre', label: 'Tutoring Times' },
+                    { sel: '#provider-2', label: 'Provider Type' },
+                    { sel: '#lang-teach', label: 'Languages Taught' },
+                    { sel: '#student-gen', label: 'Student Gender Preference' },
+                    { sel: '#first-aid', label: 'First Aid Training' },
+                    { sel: '#tutor-rate', label: 'Hourly Rate' },
+                    { sel: '#special-exp', label: 'Special Experience' },
+                    { sel: '#rate-nego', label: 'Price Negotiable' },
 
-                // --- Tech Info ---
-                { sel: '#online-tools', label: 'Online Tools' },
-                { sel: '#internet-stable', label: 'Stable Internet' },
-                { sel: '#webcam', label: 'Webcam' },
+                    // --- Tech Info ---
+                    { sel: '#online-tools', label: 'Online Tools' },
+                    { sel: '#internet-stable', label: 'Stable Internet' },
+                    { sel: '#webcam', label: 'Webcam' },
 
-                // --- ID & Qualifications ---
-                { sel: '#emirID', label: 'Emirates ID Number' },
-                { sel: '#emir-date', label: 'Emirates ID Expiry' },
-                { sel: '#years-exp', label: 'Years of Experience' },
-                { sel: '#exam-board', label: 'Exam Boards' },
-                { sel: '#curriculum', label: 'Curriculum' },
-                { sel: '#subject-sec-1115', label: 'Secondary Subjects' },
-                { sel: '#subject-col-1618', label: 'College Subjects' },
-                { sel: '#Multiple\\[\\]-2', label: 'Primary Subjects' }, 
+                    // --- ID & Qualifications ---
+                    { sel: '#emirID', label: 'Emirates ID Number' },
+                    { sel: '#emir-date', label: 'Emirates ID Expiry' },
+                    { sel: '#years-exp', label: 'Years of Experience' },
+                    { sel: '#exam-board', label: 'Exam Boards' },
+                    { sel: '#curriculum', label: 'Curriculum' },
+                    { sel: '#subject-sec-1115', label: 'Secondary Subjects' },
+                    { sel: '#subject-col-1618', label: 'College Subjects' },
+                    { sel: '#Multiple\\[\\]-2', label: 'Primary Subjects' }, 
 
-                // --- Files ---
-                { sel: '#qual-files', label: 'Qualification Files' },
-                { sel: '#uae-police-files', label: 'Police Clearance' },
-                { sel: '#emirates-front-files', label: 'Emirates ID Front' },
-                { sel: '#emirates-back-files', label: 'Emirates ID Back' },
+                    // --- Files ---
+                    { sel: '#qual-files', label: 'Qualification Files' },
+                    { sel: '#uae-police-files', label: 'Police Clearance' },
+                    { sel: '#emirates-front-files', label: 'Emirates ID Front' },
+                    { sel: '#emirates-back-files', label: 'Emirates ID Back' },
 
-                // --- Consent ---
-                { sel: '#consent-terms', label: 'Privacy Consent' },
-                { sel: '#consent-mark', label: 'Marketing Consent' }
-            ];
+                    // --- Consent ---
+                    { sel: '#consent-terms', label: 'Privacy Consent' },
+                    { sel: '#consent-mark', label: 'Marketing Consent' }
+                ];
 
             let firstFail = null;
             let missingLabels = [];
@@ -805,6 +805,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             return true;
         }
+    };
 
     /**
      * =============================================================================
