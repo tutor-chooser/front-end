@@ -370,25 +370,45 @@ document.addEventListener("DOMContentLoaded", function () {
             if (banner) banner.style.display = (percent === 100 && submitted !== "YES") ? "block" : "none";
         },
 
+        // PASTE THIS NEW VERSION
         updateReferralUI: (status) => {
             const validText = Utils.getElement("ref-valid");
             const codeInput = Utils.getElement("ref-code");
             if (!validText || !codeInput) return;
 
+            // 1. If input is empty, hide everything
             if (!codeInput.value.trim()) {
                 validText.style.display = 'none';
                 codeInput.style.borderColor = '';
+                codeInput.style.borderWidth = '';
                 return;
             }
 
+            // 2. Setup Base Styles
             validText.style.display = 'inline-block';
             codeInput.style.borderWidth = "2px";
             codeInput.style.borderRadius = "50px";
             
-            const isVal = status === "VALID";
-            codeInput.style.borderColor = isVal ? "#28a745" : "#dc3545";
-            validText.style.color = isVal ? "#28a745" : "#dc3545";
-            validText.textContent = status ? status.toUpperCase() : "INVALID";
+            // 3. Normalize Status
+            const cleanStatus = status ? status.trim().toUpperCase() : "";
+
+            // 4. Logic: Valid vs Invalid vs Checking
+            if (cleanStatus === "VALID") {
+                // Valid (Green)
+                codeInput.style.borderColor = "#28a745";
+                validText.style.color = "#28a745";
+                validText.textContent = "VALID";
+            } else if (cleanStatus === "INVALID") {
+                // Invalid (Red)
+                codeInput.style.borderColor = "#dc3545";
+                validText.style.color = "#dc3545";
+                validText.textContent = "INVALID";
+            } else {
+                // Checking/Pending (Grey)
+                codeInput.style.borderColor = "#6c757d";
+                validText.style.color = "#6c757d";
+                validText.textContent = "CHECKING...";
+            }
         },
 
         updatePricing: (data) => {
