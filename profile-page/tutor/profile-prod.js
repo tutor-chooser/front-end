@@ -837,6 +837,7 @@ document.addEventListener("DOMContentLoaded", function () {
         f("consent-terms", d[C.privacyConsent]?.text); f("consent-mark", d[C.marketingConsent]?.text);
         f("emir-date", Utils.formatDateFromMonday(d[C.emirDate]?.value?.date));
         f("ref-code", d[C.tutorIdV1]?.text);
+        f("tutor-uni-id", d[C.tutorUniID]?.text);
 
         // 1. Plan Name (Formatted to be readable)
         f("plan_name", Utils.formatPlanName(d[C.planName]?.text));
