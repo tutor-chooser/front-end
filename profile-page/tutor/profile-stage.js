@@ -392,22 +392,28 @@ document.addEventListener("DOMContentLoaded", function () {
             // 3. Normalize Status
             const cleanStatus = status ? status.trim().toUpperCase() : "";
 
-            // 4. Logic: Valid vs Invalid vs Checking
+            // 4. Create the Grey Label Prefix
+            // This span ensures "Status:" is always grey (#6c757d) and normal weight
+            const prefix = '<span style="color: #6c757d; font-weight: 400;">Code Status: </span>';
+
+            // 5. Logic: Handle Colors and Text
             if (cleanStatus === "VALID") {
-                // Valid (Green)
-                codeInput.style.borderColor = "#28a745";
-                validText.style.color = "#28a745";
-                validText.textContent = "VALID";
+                // --- VALID STATE ---
+                codeInput.style.borderColor = "#28a745"; // Green Border
+                validText.style.color = "#28a745";       // Green Text for the result
+                validText.innerHTML = prefix + "<strong>VALID</strong>";
+
             } else if (cleanStatus === "INVALID") {
-                // Invalid (Red)
-                codeInput.style.borderColor = "#dc3545";
-                validText.style.color = "#dc3545";
-                validText.textContent = "INVALID";
+                // --- INVALID STATE ---
+                codeInput.style.borderColor = "#dc3545"; // Red Border
+                validText.style.color = "#dc3545";       // Red Text for the result
+                validText.innerHTML = prefix + "<strong>INVALID</strong>";
+
             } else {
-                // Checking/Pending (Grey)
-                codeInput.style.borderColor = "#6c757d";
-                validText.style.color = "#6c757d";
-                validText.textContent = "CHECKING...";
+                // --- CHECKING STATE ---
+                codeInput.style.borderColor = "#6c757d"; // Grey Border
+                validText.style.color = "#6c757d";       // Grey Text for the result
+                validText.innerHTML = prefix + "CHECKING...";
             }
         },
 
