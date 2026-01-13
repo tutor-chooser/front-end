@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
             teachingLicenseFile: "file_mks2ekqg", qualificationsFile: "file_mks2nzg0",
             uaePoliceFile: "file_mks2vacv", emiratesIdFrontFile: "file_mks2qb9m",
             emiratesIdBackFile: "file_mks2knah", 
-            emirID: "text_mks25drf" // Ensure this line is present and correct!
+            emirID: "text_mks25drf"
         },
         MONTHS: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     };
@@ -837,6 +837,15 @@ document.addEventListener("DOMContentLoaded", function () {
         f("consent-terms", d[C.privacyConsent]?.text); f("consent-mark", d[C.marketingConsent]?.text);
         f("emir-date", Utils.formatDateFromMonday(d[C.emirDate]?.value?.date));
         f("ref-code", d[C.tutorIdV1]?.text);
+
+        // 1. Plan Name (Formatted to be readable)
+        f("plan_name", Utils.formatPlanName(d[C.planName]?.text));
+
+        // 2. Expiry Date (Formatted to DD Month YYYY)
+        f("plan_expir", Utils.formatDateFromMonday(d[C.planEnd]?.value?.date));
+
+        // 3. Status (Using Verified Status column, change C.verifiedStatus to C.feePaid if preferred)
+        f("plan_status", d[C.verifiedStatus]?.text);
         
         const approvalCheck = Utils.getElement("approval-check");
         if (approvalCheck) approvalCheck.checked = (d[C.approvalConfirm]?.text?.trim().toUpperCase() === "YES");
