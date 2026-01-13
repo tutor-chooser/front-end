@@ -379,15 +379,12 @@ document.addEventListener("DOMContentLoaded", function () {
             // 1. If input is empty, hide everything
             if (!codeInput.value.trim()) {
                 validText.style.display = 'none';
-                codeInput.style.borderColor = '';
-                codeInput.style.borderWidth = '';
                 return;
             }
 
             // 2. Setup Base Styles
             validText.style.display = 'inline-block';
-            codeInput.style.borderWidth = "2px";
-            codeInput.style.borderRadius = "50px";
+
             
             // 3. Normalize Status
             const cleanStatus = status ? status.trim().toUpperCase() : "";
@@ -399,19 +396,16 @@ document.addEventListener("DOMContentLoaded", function () {
             // 5. Logic: Handle Colors and Text
             if (cleanStatus === "VALID") {
                 // --- VALID STATE ---
-                codeInput.style.borderColor = "#28a745"; // Green Border
                 validText.style.color = "#28a745";       // Green Text for the result
                 validText.innerHTML = prefix + "<strong>VALID</strong>";
 
             } else if (cleanStatus === "INVALID") {
                 // --- INVALID STATE ---
-                codeInput.style.borderColor = "#dc3545"; // Red Border
                 validText.style.color = "#dc3545";       // Red Text for the result
                 validText.innerHTML = prefix + "<strong>INVALID</strong>";
 
             } else {
                 // --- CHECKING STATE ---
-                codeInput.style.borderColor = "#6c757d"; // Grey Border
                 validText.style.color = "#6c757d";       // Grey Text for the result
                 validText.innerHTML = prefix + "CHECKING...";
             }
