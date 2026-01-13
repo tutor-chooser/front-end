@@ -692,75 +692,89 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         
         validateVerify: () => {
-             const required = [
+            // 1. Define fields with their IDs and Human-Readable Labels
+            const fields = [
                 // --- Personal Info ---
-                '#First-name', '#Last-name', '#location-address-new', '#gender', '#prefix', 
-                '#how-hear', '#nationality', '#lang-spoke', '#dob', '#uae-phone-4', 
-                
+                { sel: '#prefix', label: 'Prefix' },
+                { sel: '#First-name', label: 'First Name' },
+                { sel: '#Last-name', label: 'Last Name' },
+                { sel: '#location-address-new', label: 'Location' },
+                { sel: '#gender', label: 'Gender' },
+                { sel: '#how-hear', label: 'How did you hear about us' },
+                { sel: '#nationality', label: 'Nationality' },
+                { sel: '#lang-spoke', label: 'Languages Spoken' },
+                { sel: '#dob', label: 'Date of Birth' },
+                { sel: '#uae-phone-4', label: 'UAE Phone' },
+
                 // --- Teaching Info ---
-                '#tutor-mode', '#bio', '#tutor-time-pre', '#provider-2', '#lang-teach',
-                '#student-gen', '#first-aid', '#tutor-rate', '#special-exp', '#rate-nego',
-                
+                { sel: '#tutor-mode', label: 'Tutor Mode' },
+                { sel: '#bio', label: 'Bio' },
+                { sel: '#tutor-time-pre', label: 'Tutoring Times' },
+                { sel: '#provider-2', label: 'Provider Type' },
+                { sel: '#lang-teach', label: 'Languages Taught' },
+                { sel: '#student-gen', label: 'Student Gender Preference' },
+                { sel: '#first-aid', label: 'First Aid Training' },
+                { sel: '#tutor-rate', label: 'Hourly Rate' },
+                { sel: '#special-exp', label: 'Special Experience' },
+                { sel: '#rate-nego', label: 'Price Negotiable' },
+
                 // --- Tech Info ---
-                '#online-tools', '#internet-stable', '#webcam',
-                
+                { sel: '#online-tools', label: 'Online Tools' },
+                { sel: '#internet-stable', label: 'Stable Internet' },
+                { sel: '#webcam', label: 'Webcam' },
+
                 // --- ID & Qualifications ---
-                '#emirID', '#emir-date', '#years-exp', 
-                '#exam-board', '#curriculum', 
-                '#subject-sec-1115', '#subject-col-1618', '#Multiple\\[\\]-2', // Note the escape chars for brackets
-                
+                { sel: '#emirID', label: 'Emirates ID Number' },
+                { sel: '#emir-date', label: 'Emirates ID Expiry' },
+                { sel: '#years-exp', label: 'Years of Experience' },
+                { sel: '#exam-board', label: 'Exam Boards' },
+                { sel: '#curriculum', label: 'Curriculum' },
+                { sel: '#subject-sec-1115', label: 'Secondary Subjects' },
+                { sel: '#subject-col-1618', label: 'College Subjects' },
+                { sel: '#Multiple\\[\\]-2', label: 'Primary Subjects' }, 
+
                 // --- Files ---
-                '#qual-files', '#uae-police-files', 
-                '#emirates-front-files', '#emirates-back-files',
-                
+                { sel: '#qual-files', label: 'Qualification Files' },
+                { sel: '#uae-police-files', label: 'Police Clearance' },
+                { sel: '#emirates-front-files', label: 'Emirates ID Front' },
+                { sel: '#emirates-back-files', label: 'Emirates ID Back' },
+
                 // --- Consent ---
-                '#consent-terms', '#consent-mark'
+                { sel: '#consent-terms', label: 'Privacy Consent' },
+                { sel: '#consent-mark', label: 'Marketing Consent' }
             ];
-            
+
             let firstFail = null;
-            let count = 0;
-            
-            required.forEach(sel => {
-                const el = document.querySelector(sel);
-                if (!el) {
-                    // Debugging helper: uncomment if you suspect ID mismatches
-                    // console.warn("Validation: Element not found", sel);
-                    return;
-                }
-                
+            let missingLabels = [];
+
+            fields.forEach(field => {
+                const el = document.querySelector(field.sel);
+                if (!el) return;
+
                 let valid = false;
-                
-                // Specific validation logic per type
+
+                // --- Validation Logic ---
                 if (el.tagName === 'SELECT') {
-                    // For multiselects, check if any option is selected
-                    if (el.multiple) {
-                        valid = el.selectedOptions.length > 0;
-                    } else {
-                        valid = !!el.value;
-                    }
+                    if (el.multiple) valid = el.selectedOptions.length > 0;
+                    else valid = !!el.value;
                 } 
                 else if (el.id.includes('files')) {
-                    // For file lists (UL elements), check if they have children (LI items)
                     valid = el.children.length > 0;
                 } 
                 else {
-                    // For standard Text inputs
                     valid = !!el.value.trim();
                 }
 
-                // Visual Error Marking
+                // --- Visual Error Marking ---
+                // Handle Select2 containers specially
                 if (el.classList.contains("select2-hidden-accessible")) {
-                     // Find the Select2 container (the visual part)
-                     // Look for sibling, but if not immediate, try jQuery fallback
                      let s2 = el.nextElementSibling;
                      if (!s2 || !s2.classList.contains('select2-container')) {
-                         // Fallback: Sometimes Webflow/Memberstack injects hidden inputs in between
                          if (window.jQuery) {
                              const $s2 = window.jQuery(el).data('select2')?.$container;
                              if ($s2) s2 = $s2[0];
                          }
                      }
-                     
                      if(s2) {
                          const selection = s2.querySelector('.select2-selection');
                          if (selection) selection.classList.toggle('tc-invalid', !valid);
@@ -768,28 +782,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     el.classList.toggle('tc-invalid', !valid);
                 }
-                
-                if (!valid) { 
-                    count++; 
-                    if (!firstFail) firstFail = el; 
+
+                // --- Collection Logic ---
+                if (!valid) {
+                    missingLabels.push(field.label);
+                    if (!firstFail) firstFail = el;
                 }
             });
-            
+
             if (firstFail) {
-                // If the first failure is a hidden Select2, scroll to its visible container instead
+                // Scroll to error
                 if (firstFail.classList.contains("select2-hidden-accessible")) {
                     const s2Container = firstFail.nextElementSibling;
                     if (s2Container) s2Container.scrollIntoView({behavior:'smooth', block:'center'});
                 } else {
                     firstFail.scrollIntoView({behavior:'smooth', block:'center'});
                 }
-                
-                Utils.showMessage(`Please complete ${count} missing fields.`, 'error');
+
+                // Show the specific list of missing fields
+                Utils.showMessage("Please complete: " + missingLabels.join(", "), 'error');
                 return false;
             }
             return true;
         }
-    };
 
     /**
      * =============================================================================
