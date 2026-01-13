@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
 
         formatPlanName: (raw) => {
-            if (!raw) return 'N/A';
+            if (!raw) return '-';
             const map = {
                 'TUTOR_VERIFICATION_FEE': 'Tutor Verification Fee',
                 'STARTER_MONTHLY': 'Tutor Starter (Monthly)',
