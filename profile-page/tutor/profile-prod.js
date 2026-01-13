@@ -487,8 +487,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (el) {
                     el.disabled = locked;
                     if(locked) {
-                        el.style.backgroundColor = "#f5f5f5";
-                        el.style.borderColor = "#ddd";
+                        el.style.backgroundColor = "#f7f7f7";
+                        el.style.borderColor = "#f7f7f7";
                     }
                 }
             });
