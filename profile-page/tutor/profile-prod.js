@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
             marketingConsent: "color_mks2vefc", verifiedStatus: "color_mks24exj",
             earlyAdopterStatus: "color_mks2t0bh", progressPercent: "numeric_mks2r1s7",
             teachingLicenseFile: "file_mks2ekqg", qualificationsFile: "file_mks2nzg0",
-            uaePoliceFile: "file_mks2vacv", emiratesIdFrontFile: "file_mks2qb9m",
+            uaePoliceFile: "file_mks2vacv", emiratesIdFrontFile: "file_mks2qb9m", policeCheckStatus: "color_mksew0by",
             emiratesIdBackFile: "file_mks2knah", 
             emirID: "text_mks25drf"
         },
@@ -522,6 +522,9 @@ document.addEventListener("DOMContentLoaded", function () {
             
             const licenseVerify = data?.[CONFIG.COLS.licenseVerify]?.text?.trim();
             show("license-badge", licenseVerify === "Verified by Bodruz");
+
+            const policeStatus = data?.[CONFIG.COLS.policeCheckStatus]?.text?.toUpperCase();
+            show("police-badge", policeStatus === "YES");
 
             // --- 5. PLAN BADGES ---
             const showPlanBadge = (id, cond) => { const el = Utils.getElement(id); if (el) el.style.display = cond ? 'block' : 'none'; };
