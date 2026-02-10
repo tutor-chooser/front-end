@@ -3,7 +3,7 @@
         getMeetingsUrl: 'https://tc-staging-meetings.tutorchooser.workers.dev/get-meetings?limit=4',
         confirmUrl: 'https://tc-staging-stripe.tutorchooser.workers.dev/confirm-consultation',
         declineUrl: 'https://tc-staging-stripe.tutorchooser.workers.dev/decline-consultation',
-        mondayApiUrl: 'https://tc-staging.tutorchooser.workers.dev/'  
+        mondayApiUrl: 'https://tc-stage.tutorchooser.workers.dev/'  
     };
 
     const tableBody = document.getElementById('table-body');
