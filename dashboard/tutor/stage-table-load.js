@@ -3,7 +3,7 @@
         getMeetingsUrl: 'https://tc-staging-meetings.tutorchooser.workers.dev/get-meetings?limit=4',
         confirmUrl: 'https://tc-staging-stripe.tutorchooser.workers.dev/confirm-consultation',
         declineUrl: 'https://tc-staging-stripe.tutorchooser.workers.dev/decline-consultation',
-        mondayApiUrl: 'https://tc-staging.tutorchooser.workers.dev/' 
+        mondayApiUrl: 'https://tc-staging.tutorchooser.workers.dev/'  
     };
 
     const tableBody = document.getElementById('table-body');
@@ -20,23 +20,52 @@
     const planModal = document.getElementById('plan-required-modal');
     
     // --- INITIALIZATION ---
+    // --- UPDATED INITIALIZATION ---
     (async () => {
         try {
             await window.$memberstackDom.getCurrentMember();
             hasActivePlan = await checkPlanStatus();
             await fetchRequests(true);
             setupEventListeners();
-            const isPro = await isProUser();
 
-            if (!isPro) {
-        const banner = document.getElementById('free-plan-banner');
-        if (banner) banner.style.display = 'block';
-    }
+            // 1. Get the plan string directly
+            const planName = await getPlanStatusName(); 
+            
+            // 2. Check ONLY for "FREE"
+            if (planName.toUpperCase().includes("FREE")) {
+                const banner = document.getElementById('free-plan-banner');
+                if (banner) banner.style.display = 'block';
+            }
         } catch (err) {
             console.error('[TutorDash] Init error:', err);
             showState('error', 'Could not load data. Please ensure you are logged in.');
         }
     })();
+
+    // --- REPLACED isProUser WITH THIS ---
+    async function getPlanStatusName() {
+        try {
+            const member = await window.$memberstackDom.getCurrentMember();
+            const tutorId = member?.data?.customFields["tutor-id"];
+            if (!tutorId) return "";
+
+            const token = await getAuthToken();
+            const query = `query($itemId: ID!) { items(ids: [$itemId]) { column_values(ids: ["text_mktk7zs4"]) { text } } }`;
+            
+            const response = await fetch(CONFIG.mondayApiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": token },
+                body: JSON.stringify({ query, variables: { itemId: String(tutorId) } })
+            });
+            
+            const json = await response.json();
+            // Returns "FREE_PLAN", "PRO_PLAN", etc.
+            return json?.data?.items?.[0]?.column_values?.[0]?.text || "";
+        } catch (e) { 
+            console.error("Error fetching plan name:", e);
+            return ""; 
+        }
+    }
 
     // --- API & HELPER FUNCTIONS ---
     async function getAuthToken() {
