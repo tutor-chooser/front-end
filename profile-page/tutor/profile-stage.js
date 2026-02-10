@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
             PROFILE_WORKER: "https://tc-staging-profile.tutorchooser.workers.dev",
             COMPLETION_WORKER: "https://tc-staging-profile.tutorchooser.workers.dev/completion"
         },
-        // Complete mapping of your Monday.com column IDs
+      
         COLS: {
             name: "name", email: "contact_email", prefix: "dropdown_mks2rnhn",
             firstName: "text_mks2v0wr", feedbackHear: "dropdown_mks2hc7t",
@@ -38,9 +38,9 @@ document.addEventListener("DOMContentLoaded", function () {
             marketingConsent: "color_mks2vefc", verifiedStatus: "color_mks24exj",
             earlyAdopterStatus: "color_mks2t0bh", progressPercent: "numeric_mks2r1s7",
             teachingLicenseFile: "file_mks2ekqg", qualificationsFile: "file_mks2nzg0",
-            uaePoliceFile: "file_mks2vacv", emiratesIdFrontFile: "file_mks2qb9m",
+            uaePoliceFile: "file_mks2vacv", emiratesIdFrontFile: "file_mks2qb9m", policeCheckStatus: "color_mksew0by",
             emiratesIdBackFile: "file_mks2knah", 
-            emirID: "text_mks25drf" // Ensure this line is present and correct!
+            emirID: "text_mks25drf"
         },
         MONTHS: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     };
@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
 
         formatPlanName: (raw) => {
-            if (!raw) return 'N/A';
+            if (!raw) return '-';
             const map = {
                 'TUTOR_VERIFICATION_FEE': 'Tutor Verification Fee',
                 'STARTER_MONTHLY': 'Tutor Starter (Monthly)',
@@ -487,8 +487,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (el) {
                     el.disabled = locked;
                     if(locked) {
-                        el.style.backgroundColor = "#f5f5f5";
-                        el.style.borderColor = "#ddd";
+                        el.style.backgroundColor = "#f7f7f7";
+                        el.style.borderColor = "#f7f7f7";
                     }
                 }
             });
@@ -523,6 +523,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const licenseVerify = data?.[CONFIG.COLS.licenseVerify]?.text?.trim();
             show("license-badge", licenseVerify === "Verified by Bodruz");
 
+            const policeStatus = data?.[CONFIG.COLS.policeCheckStatus]?.text?.toUpperCase();
+            show("police-badge", policeStatus === "YES");
+
             // --- 5. PLAN BADGES ---
             const showPlanBadge = (id, cond) => { const el = Utils.getElement(id); if (el) el.style.display = cond ? 'block' : 'none'; };
             showPlanBadge("pro-badge", planNameUpper.includes("PRO"));
@@ -550,7 +553,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // --- 7. PLAN VISIBILITY LOGIC (STRICT) ---
             const planPurchase = Utils.getElement("plan-purchase");
-
             const upgradeTitle = Utils.getElement("upgrade-plan-title");
             const normalTitle = Utils.getElement("normal-title");
 
@@ -854,6 +856,24 @@ document.addEventListener("DOMContentLoaded", function () {
         f("consent-terms", d[C.privacyConsent]?.text); f("consent-mark", d[C.marketingConsent]?.text);
         f("emir-date", Utils.formatDateFromMonday(d[C.emirDate]?.value?.date));
         f("ref-code", d[C.tutorIdV1]?.text);
+        f("tutor-uni-id", d[C.tutorUniID]?.text);
+
+        const rawPlanName = d[C.planName]?.text;
+
+        // 1. Plan Name
+        f("plan_name", Utils.formatPlanName(rawPlanName));
+
+        // 2. Expiry Date
+        f("plan_expir", Utils.formatDateFromMonday(d[C.planEnd]?.value?.date));
+
+        // 3. Status Logic
+        // Condition: If rawPlanName exists and isn't empty -> "Active"
+        // Otherwise -> Revert to "-" (do NOT use verifiedStatus)
+        if (rawPlanName && rawPlanName.trim().length > 0) {
+            f("plan_status", "Active");
+        } else {
+            f("plan_status", "-");
+        }
         
         const approvalCheck = Utils.getElement("approval-check");
         if (approvalCheck) approvalCheck.checked = (d[C.approvalConfirm]?.text?.trim().toUpperCase() === "YES");
