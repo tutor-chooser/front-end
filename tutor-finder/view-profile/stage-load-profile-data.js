@@ -121,7 +121,6 @@ const selectedTutorMeta = JSON.parse(sessionStorage.getItem("selectedTutorMeta")
         document.getElementById("view-teacher-tutor-time").textContent = formatList(tutor.preferredTutoringTimes);
         document.getElementById("view-teacher-tutor-lang").textContent = formatList(tutor.languagesAbleToTeachIn);
         document.getElementById("view-teacher-name").textContent = tutor.firstName;
-        document.getElementById("view-teacher-full-name").textContent = tutor.firstName;
         document.getElementById("view-teacher-location").textContent = tutor.location || "—";
         document.getElementById("view-teacher-nationality").textContent = tutor.nationality || "—";
         document.getElementById("view-teacher-years-exp").textContent = tutor.yearsOfTeachingExperience || "—";
