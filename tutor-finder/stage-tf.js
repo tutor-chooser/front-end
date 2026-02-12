@@ -484,26 +484,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if (tutor.id) {
                 card.href = `/view-teacher?id=${tutor.id}`;
-                
-                // Add a wrapper function to handle both state saving and tracking
-                card.addEventListener('click', (e) => {
-                    // 1. Run your existing state saving logic
-                    saveState();
-
-                    // 2. 📊 Send Event to Microsoft Clarity
-                    if (window.clarity) {
-                        // Track that a card was clicked (for counts)
-                        window.clarity("event", "Tutor_Card_Click");
-
-                        // OPTIONAL: Store details about WHICH tutor was clicked
-                        // (This lets you filter recordings by specific tutors)
-                        window.clarity("set", "clicked_tutor_name", tutorName);
-                        window.clarity("set", "clicked_tutor_id", tutor.id);
-                    }
-                });
-            } else { 
-                card.removeAttribute('href'); 
-            }
+                card.addEventListener('click', saveState);
+            } else { card.removeAttribute('href'); }
 
             const oldContent = card.querySelector('.card-content');
             if (oldContent) oldContent.remove(); 
