@@ -303,20 +303,21 @@
             meetingId: req.id,
             requestDate: req.request_date,
             parentName: req.parent_first_name || 'N/A',
+            // 🚨 MAPPING THE NEW FIELDS HERE
             details: {
                 age: req.child_age_range,
                 curriculum: req.child_curriculum,
                 goal: req.goal,
                 type: req.lesson_type,
                 availability: req.child_availability,
-                fallbackMessage: req.message_for_tutor // Keep as backup
+                fallbackMessage: req.message_for_tutor
             },
             tutorResponse: req.tutor_response,
             responseDate: req.response_date,
             requestOutcome: req.request_outcome || null
         };
     }
-
+    
     function createRowElement(req) {
         const row = document.createElement('div');
         row.className = 'table-row';
@@ -325,7 +326,7 @@
         const formattedResponseDate = req.responseDate ? formatDate(req.responseDate) : '-';
         let responseHtml;
 
-        // ... (Keep your existing status logic for responseHtml here) ...
+        // --- Status Logic (Kept mostly the same) ---
         const tutorResponse = req.tutorResponse ? req.tutorResponse.toLowerCase() : null;
         const requestOutcome = req.requestOutcome ? req.requestOutcome.toLowerCase() : null;
 
@@ -346,31 +347,44 @@
             responseHtml = `<span class="status-badge ${getStatusClass(statusText)}">${escapeHtml(statusText)}</span>`;
         }
 
-        // 🚨 BUILD THE DETAILS HTML
+        // 🚨 NEW DETAILS HTML GENERATION
         let detailsHtml = '';
         
-        // Check if we have the structured data. If the goal is missing, we assume old format.
-        if (req.details.goal) {
+        // If we have specific goal data, use the new layout
+        if (req.details.goal || req.details.age) {
             detailsHtml = `
-                <div style="font-size: 13px; line-height: 1.6;">
-                    <div style="margin-bottom: 4px;"><strong>Goal:</strong> ${escapeHtml(req.details.goal)}</div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; color: #555;">
-                        <div><span style="color:#888; font-size:11px;">AGE:</span> ${escapeHtml(req.details.age || '-')}</div>
-                        <div><span style="color:#888; font-size:11px;">CURRICULUM:</span> ${escapeHtml(req.details.curriculum || '-')}</div>
-                        <div><span style="color:#888; font-size:11px;">TYPE:</span> ${escapeHtml(req.details.type || '-')}</div>
-                        <div><span style="color:#888; font-size:11px;">TIME:</span> ${escapeHtml(req.details.availability || '-')}</div>
+                <div class="req-goal">
+                    <span style="font-size:10px; text-transform:uppercase; color:#a35d5d; display:block;">Main Goal:</span>
+                    ${escapeHtml(req.details.goal || 'No specific goal provided')}
+                </div>
+                <div class="req-grid">
+                    <div class="req-item">
+                        <span class="req-label">Age</span>
+                        <span class="req-val">${escapeHtml(req.details.age || '-')}</span>
+                    </div>
+                    <div class="req-item">
+                        <span class="req-label">Curriculum</span>
+                        <span class="req-val">${escapeHtml(req.details.curriculum || '-')}</span>
+                    </div>
+                    <div class="req-item">
+                        <span class="req-label">Type</span>
+                        <span class="req-val">${escapeHtml(req.details.type || '-')}</span>
+                    </div>
+                    <div class="req-item">
+                        <span class="req-label">Availability</span>
+                        <span class="req-val">${escapeHtml(req.details.availability || '-')}</span>
                     </div>
                 </div>
             `;
         } else {
-            // Fallback for old requests that might only have the message string
+            // Fallback for old requests
             detailsHtml = `<span class="cell-value request-details-text">${escapeHtml(req.details.fallbackMessage || 'No details provided.')}</span>`;
         }
 
-        // 🚨 UPDATED HTML STRUCTURE
+        // 🚨 INJECT INTO THE ROW
         row.innerHTML = `
             <div class="table-cell" data-label="Meeting ID">
-                <span class="cell-value">${escapeHtml(req.meetingId)}</span>
+                <span class="cell-value" style="font-family:monospace; color:#aaa;">${escapeHtml(req.meetingId)}</span>
             </div>
             <div class="table-cell" data-label="Request Date">
                 <span class="cell-value">${formattedRequestDate}</span>
@@ -379,10 +393,11 @@
                 <span class="cell-value">${formattedResponseDate}</span>
             </div>
             <div class="table-cell" data-label="Parent Name">
-                <span class="cell-value" style="font-weight:700; color:var(--brand-dark-blue);">${escapeHtml(req.parentName)}</span>
+                <span class="cell-value" style="font-weight:700; color:var(--brand-dark-blue); font-size:15px;">${escapeHtml(req.parentName)}</span>
             </div>
             <div class="table-cell" data-label="Details">
-                ${detailsHtml} </div>
+                ${detailsHtml}
+            </div>
             <div class="table-cell" data-label="Status">
                 <span class="cell-value">${responseHtml}</span>
             </div>
