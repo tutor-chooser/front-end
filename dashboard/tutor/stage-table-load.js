@@ -318,56 +318,77 @@
     }
 
     function createRowElement(req) {
-            const row = document.createElement('div');
-            row.className = 'table-row';
+        const row = document.createElement('div');
+        row.className = 'table-row';
 
-            const formattedRequestDate = formatDate(req.requestDate);
-            const formattedResponseDate = req.responseDate ? formatDate(req.responseDate) : '-';
-            let responseHtml;
+        const formattedRequestDate = formatDate(req.requestDate);
+        const formattedResponseDate = req.responseDate ? formatDate(req.responseDate) : '-';
+        let responseHtml;
 
-            const tutorResponse = req.tutorResponse ? req.tutorResponse.toLowerCase() : null;
-            const requestOutcome = req.requestOutcome ? req.requestOutcome.toLowerCase() : null;
+        // ... (Keep your existing status logic for responseHtml here) ...
+        const tutorResponse = req.tutorResponse ? req.tutorResponse.toLowerCase() : null;
+        const requestOutcome = req.requestOutcome ? req.requestOutcome.toLowerCase() : null;
 
-            if (tutorResponse === 'accepted') {
-                responseHtml = `<span class="status-badge ${getStatusClass('accepted')}">Accepted</span>`;
-            } else if (tutorResponse === 'declined') {
-                responseHtml = `<span class="status-badge ${getStatusClass('declined')}">Declined</span>`;
-            } else if (tutorResponse === null && requestOutcome === 'request timed out') {
-                responseHtml = `<span class="status-badge ${getStatusClass('timed out')}">Timed Out</span>`;
-            } else if (tutorResponse === null && requestOutcome === null) {
-                responseHtml = `
-                    <div class="action-buttons">
-                        <button class="btn btn-accept" data-request-id="${req.meetingId}" data-action="Accepted">Accept</button>
-                        <button class="btn btn-decline" data-request-id="${req.meetingId}" data-action="Declined">Decline</button>
-                    </div>`;
-            } else {
-                const statusText = req.requestOutcome || req.tutorResponse || 'Waiting';
-                responseHtml = `<span class="status-badge ${getStatusClass(statusText)}">${escapeHtml(statusText)}</span>`;
-            }
+        if (tutorResponse === 'accepted') {
+            responseHtml = `<span class="status-badge ${getStatusClass('accepted')}">Accepted</span>`;
+        } else if (tutorResponse === 'declined') {
+            responseHtml = `<span class="status-badge ${getStatusClass('declined')}">Declined</span>`;
+        } else if (tutorResponse === null && requestOutcome === 'request timed out') {
+            responseHtml = `<span class="status-badge ${getStatusClass('timed out')}">Timed Out</span>`;
+        } else if (tutorResponse === null && requestOutcome === null) {
+            responseHtml = `
+                <div class="action-buttons">
+                    <button class="btn btn-accept" data-request-id="${req.meetingId}" data-action="Accepted">Accept</button>
+                    <button class="btn btn-decline" data-request-id="${req.meetingId}" data-action="Declined">Decline</button>
+                </div>`;
+        } else {
+            const statusText = req.requestOutcome || req.tutorResponse || 'Waiting';
+            responseHtml = `<span class="status-badge ${getStatusClass(statusText)}">${escapeHtml(statusText)}</span>`;
+        }
 
-            // UPDATED HTML: Added data-label attributes below
-            row.innerHTML = `
-                <div class="table-cell" data-label="Meeting ID">
-                    <span class="cell-value">${escapeHtml(req.meetingId)}</span>
-                </div>
-                <div class="table-cell" data-label="Request Date">
-                    <span class="cell-value">${formattedRequestDate}</span>
-                </div>
-                <div class="table-cell" data-label="Response Date">
-                    <span class="cell-value">${formattedResponseDate}</span>
-                </div>
-                <div class="table-cell" data-label="Parent Name">
-                    <span class="cell-value" style="font-weight:700; color:var(--brand-dark-blue);">${escapeHtml(req.parentName)}</span>
-                </div>
-                <div class="table-cell" data-label="Details">
-                    <span class="cell-value request-details-text">${escapeHtml(req.requestDetails)}</span>
-                </div>
-                <div class="table-cell" data-label="Status">
-                    <span class="cell-value">${responseHtml}</span>
+        // 🚨 BUILD THE DETAILS HTML
+        let detailsHtml = '';
+        
+        // Check if we have the structured data. If the goal is missing, we assume old format.
+        if (req.details.goal) {
+            detailsHtml = `
+                <div style="font-size: 13px; line-height: 1.6;">
+                    <div style="margin-bottom: 4px;"><strong>Goal:</strong> ${escapeHtml(req.details.goal)}</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; color: #555;">
+                        <div><span style="color:#888; font-size:11px;">AGE:</span> ${escapeHtml(req.details.age || '-')}</div>
+                        <div><span style="color:#888; font-size:11px;">CURRICULUM:</span> ${escapeHtml(req.details.curriculum || '-')}</div>
+                        <div><span style="color:#888; font-size:11px;">TYPE:</span> ${escapeHtml(req.details.type || '-')}</div>
+                        <div><span style="color:#888; font-size:11px;">TIME:</span> ${escapeHtml(req.details.availability || '-')}</div>
+                    </div>
                 </div>
             `;
-            return row;
+        } else {
+            // Fallback for old requests that might only have the message string
+            detailsHtml = `<span class="cell-value request-details-text">${escapeHtml(req.details.fallbackMessage || 'No details provided.')}</span>`;
         }
+
+        // 🚨 UPDATED HTML STRUCTURE
+        row.innerHTML = `
+            <div class="table-cell" data-label="Meeting ID">
+                <span class="cell-value">${escapeHtml(req.meetingId)}</span>
+            </div>
+            <div class="table-cell" data-label="Request Date">
+                <span class="cell-value">${formattedRequestDate}</span>
+            </div>
+            <div class="table-cell" data-label="Response Date">
+                <span class="cell-value">${formattedResponseDate}</span>
+            </div>
+            <div class="table-cell" data-label="Parent Name">
+                <span class="cell-value" style="font-weight:700; color:var(--brand-dark-blue);">${escapeHtml(req.parentName)}</span>
+            </div>
+            <div class="table-cell" data-label="Details">
+                ${detailsHtml} </div>
+            <div class="table-cell" data-label="Status">
+                <span class="cell-value">${responseHtml}</span>
+            </div>
+        `;
+        return row;
+    }
 
     function getStatusClass(response) {
         const status = (response || '').toLowerCase();
