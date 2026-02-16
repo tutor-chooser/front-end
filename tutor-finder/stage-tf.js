@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Data & Config
     const desktopMediaQuery = window.matchMedia("(min-width: 992px)");
-    const experienceLevels = ["Less than 1 year", "1–2 years", "3–5 years", "6–10 years", "10+ years"];
+    const experienceLevels = ["Any Experience", "1+ Years", "3+ years", "6+ years", "10+ years"];
     
     // Application State
     let nextCursor = null;
