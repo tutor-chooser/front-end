@@ -32,7 +32,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Data & Config
     const desktopMediaQuery = window.matchMedia("(min-width: 992px)");
-    const experienceLevels = ["Any Experience", "1+ Years", "3+ years", "6+ years", "10+ years"];
+    const experienceLevels = ["Less than 1 year", "1–2 years", "3–5 years", "6–10 years", "10+ years"];
+    const experienceDisplayLabels = ["Any Experience", "1+ Years", "3+ Years", "6+ Years", "10+ Years"];
     
     // Application State
     let nextCursor = null;
@@ -323,7 +324,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (filterKey === 'yearsOfTeachingExperience' && experienceSlider) {
                 const savedValue = valuesToCheck[0];
                 const index = experienceLevels.indexOf(savedValue);
-                if (index > -1) { experienceSlider.value = index; experienceValue.textContent = savedValue; experienceSliderTouched = true; }
+                if (index > -1) { experienceSlider.value = index; experienceValue.textContent = experienceDisplayLabels[index]; experienceSliderTouched = true; }
             } else if (filterKey === 'hourlyRate' && rateSlider) {
                 const maxRateValue = valuesToCheck.reduce((max, rateStr) => {
                     const val = parseInt(rateStr.replace('AED ', ''));
@@ -528,7 +529,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (experienceSlider && experienceValue) {
         experienceSlider.addEventListener('input', () => {
             if (!experienceSliderTouched) experienceSliderTouched = true;
-            experienceValue.textContent = experienceLevels[experienceSlider.value];
+            
+            // 🚨 CHANGE THIS LINE to use experienceDisplayLabels
+            experienceValue.textContent = experienceDisplayLabels[experienceSlider.value]; 
         });
     }
     if (rateSlider && rateValue) {
@@ -751,7 +754,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Apply the change to the UI
             if (targetSliderIndex !== -1) {
                 experienceSlider.value = targetSliderIndex;
-                experienceValue.textContent = experienceLevels[targetSliderIndex];
+                experienceValue.textContent = experienceDisplayLabels[targetSliderIndex];
                 experienceSliderTouched = true;
             }
         }
