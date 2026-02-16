@@ -303,7 +303,14 @@
             meetingId: req.id,
             requestDate: req.request_date,
             parentName: req.parent_first_name || 'N/A',
-            requestDetails: req.message_for_tutor || 'No details provided.',
+            details: {
+                age: req.child_age_range,
+                curriculum: req.child_curriculum,
+                goal: req.goal,
+                type: req.lesson_type,
+                availability: req.child_availability,
+                fallbackMessage: req.message_for_tutor // Keep as backup
+            },
             tutorResponse: req.tutor_response,
             responseDate: req.response_date,
             requestOutcome: req.request_outcome || null
