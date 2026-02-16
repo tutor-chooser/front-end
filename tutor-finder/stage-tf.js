@@ -468,7 +468,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 proStar.className = 'pro-star-badge';
                 proStar.innerHTML = `<svg class="pro-star-svg" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.869 1.4-8.168L.132 9.21l8.2-1.192z"/><span class="pro-star-text">PRO</span>`;
                 card.appendChild(proStar);
-            }
+            }gi
 
             const viewLink = document.createElement('div');
             viewLink.className = 'view-profile-link';
@@ -717,16 +717,45 @@ document.addEventListener("DOMContentLoaded", async () => {
             rateSliderTouched = true;
         }
 
-        if (aiData.min_experience_years && experienceSlider) {
-            const years = parseInt(aiData.min_experience_years);
-            let sliderIndex = 0;
-            if (years >= 10) sliderIndex = 4;
-            else if (years >= 6) sliderIndex = 3;
-            else if (years >= 3) sliderIndex = 2;
-            else if (years >= 1) sliderIndex = 1;
-            experienceSlider.value = sliderIndex;
-            experienceValue.textContent = experienceLevels[sliderIndex];
-            experienceSliderTouched = true;
+        // ---------------------------------------------------------
+        // 🆕 HANDLE EXPERIENCE BUCKETS (ARRAY OR SINGLE)
+        // ---------------------------------------------------------
+        if (experienceSlider) {
+            let targetSliderIndex = -1;
+
+            // Scenario A: AI returns specific buckets (New Behavior)
+            // e.g. ["6–10 years", "10+ years"]
+            if (aiData.experience_buckets && Array.isArray(aiData.experience_buckets) && aiData.experience_buckets.length > 0) {
+                
+                // We want to set the slider to the *lowest* bucket returned
+                // so that it acts as a "minimum" filter.
+                
+                // Map your levels to indices for easy comparison
+                // experienceLevels = ["Less than 1 year", "1–2 years", "3–5 years", "6–10 years", "10+ years"];
+                
+                const indices = aiData.experience_buckets.map(bucket => experienceLevels.indexOf(bucket)).filter(i => i !== -1);
+                
+                if (indices.length > 0) {
+                    // Find the smallest index (e.g. if 6-10 and 10+ are returned, pick 6-10)
+                    targetSliderIndex = Math.min(...indices);
+                }
+            } 
+            // Scenario B: Fallback to old numeric min_experience_years
+            else if (aiData.min_experience_years) {
+                const years = parseInt(aiData.min_experience_years);
+                if (years >= 10) targetSliderIndex = 4;      // 10+ years
+                else if (years >= 6) targetSliderIndex = 3;  // 6–10 years
+                else if (years >= 3) targetSliderIndex = 2;  // 3–5 years
+                else if (years >= 1) targetSliderIndex = 1;  // 1–2 years
+                else targetSliderIndex = 0;                  // Less than 1 year
+            }
+
+            // Apply the change if we found a valid target
+            if (targetSliderIndex !== -1) {
+                experienceSlider.value = targetSliderIndex;
+                experienceValue.textContent = experienceLevels[targetSliderIndex];
+                experienceSliderTouched = true;
+            }
         }
 
         if (aiData.subject) {
