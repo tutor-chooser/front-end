@@ -468,7 +468,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 proStar.className = 'pro-star-badge';
                 proStar.innerHTML = `<svg class="pro-star-svg" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.869 1.4-8.168L.132 9.21l8.2-1.192z"/><span class="pro-star-text">PRO</span>`;
                 card.appendChild(proStar);
-            }gi
+            }
 
             const viewLink = document.createElement('div');
             viewLink.className = 'view-profile-link';
