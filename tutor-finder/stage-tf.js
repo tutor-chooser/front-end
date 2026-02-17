@@ -759,17 +759,29 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
 
-        if (aiData.subject) {
-            let subjectTerm = aiData.subject.toLowerCase();
+        // ---------------------------------------------------------
+        // 🆕 UPDATED: Handle Subjects (Array Support)
+        // ---------------------------------------------------------
+        
+        // 1. Create a unified list (handles both new "subjects" array and old "subject" string)
+        const subjectsList = aiData.subjects || (aiData.subject ? [aiData.subject] : []);
+
+        // 2. Loop through each subject found
+        subjectsList.forEach(rawSubjectName => {
+            let subjectTerm = rawSubjectName.toLowerCase();
             let subjectApplied = false;
+            
+            // Handle common alias
             if (subjectTerm === 'english') subjectTerm = 'english - language';
             
+            // Determine which level buckets to look in
             let targetGroups = [];
             if (aiData.education_level === 'Primary') targetGroups = ['subjectsPrimary'];
             else if (aiData.education_level === 'Secondary') targetGroups = ['subjectsSecondary'];
             else if (aiData.education_level === 'Sixth Form') targetGroups = ['subjectsSixthForm'];
             else targetGroups = ['subjectsPrimary', 'subjectsSecondary', 'subjectsSixthForm'];
 
+            // 3. Try EXACT Match
             for (const groupKey of targetGroups) {
                 const checkboxes = document.querySelectorAll(`.filter-group[data-filter-key="${groupKey}"] input[type="checkbox"]`);
                 for (let box of checkboxes) {
@@ -780,30 +792,35 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             }
 
+            // 4. Try FUZZY Match (if exact failed)
             if (!subjectApplied) {
                 for (const groupKey of targetGroups) {
-                    if (applyFuzzyFilter(groupKey, aiData.subject)) {
+                    if (applyFuzzyFilter(groupKey, rawSubjectName)) {
                         subjectApplied = true;
                         break; 
                     }
                 }
             }
 
+            // 5. Handle Missing Categories (Show Warning)
             if (!subjectApplied) {
-                // Keep UI feedback for missing categories
+                // Add a visual chip to the top
                 const chip = document.createElement('div');
                 chip.className = 'ai-chip';
-                chip.innerHTML = `<span class="emoji">⚠️</span> No category for "${aiData.subject}"`;
+                chip.innerHTML = `<span class="emoji">⚠️</span> No category for "${rawSubjectName}"`;
                 if(chipsContainer) chipsContainer.appendChild(chip);
 
-                const noResultsMsg = document.createElement('div');
-                noResultsMsg.id = 'ai-search-error';
-                noResultsMsg.innerHTML = `<p style="color:#781212; padding:15px; text-align:center; background:#fff5f5; border:1px solid #fed7d7; border-radius:8px; margin-bottom:20px;">
-                    ⚠️ We currently don't have a specific category for <strong>${aiData.subject}</strong>. <br>Showing all tutors instead.
-                </p>`;
-                container.parentNode.insertBefore(noResultsMsg, container);
+                // Add text warning (only once to prevent stacking)
+                if (!document.getElementById('ai-search-error')) {
+                    const noResultsMsg = document.createElement('div');
+                    noResultsMsg.id = 'ai-search-error';
+                    noResultsMsg.innerHTML = `<p style="color:#781212; padding:15px; text-align:center; background:#fff5f5; border:1px solid #fed7d7; border-radius:8px; margin-bottom:20px;">
+                        ⚠️ We currently don't have a specific category for <strong>${rawSubjectName}</strong>. <br>Showing all tutors instead.
+                    </p>`;
+                    container.parentNode.insertBefore(noResultsMsg, container);
+                }
             }
-        }
+        });
 
         updateAllFilterCounts();
         expandFilteredGroups();
