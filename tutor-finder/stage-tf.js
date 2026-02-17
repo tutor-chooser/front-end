@@ -641,12 +641,34 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // ===================================================================
-    // 9. AI SEARCH INTEGRATION - 🚨 UPDATED with new Chips + StrictMode
+// ===================================================================
+    // 9. AI SEARCH INTEGRATION - WITH FRONTEND "GCSE" FALLBACK
     // ===================================================================
 
     window.addEventListener('ai-search-complete', (e) => {
         const aiData = e.detail;
+        
+        // 🚨 FRONTEND FALLBACK: Manually fix "GCSE" if the AI missed it
+        // We look at the actual text the user typed in the search box
+        const searchInput = document.getElementById("ai-search-input");
+        const rawUserQuery = searchInput ? searchInput.value.toLowerCase() : "";
+
+        if (!aiData.education_level) {
+            if (rawUserQuery.includes('gcse') || rawUserQuery.includes('igcse') || rawUserQuery.includes('year 10') || rawUserQuery.includes('year 11')) {
+                console.log("⚡️ Frontend Override: Detected GCSE, forcing Secondary Level.");
+                aiData.education_level = "Secondary";
+            }
+            else if (rawUserQuery.includes('a level') || rawUserQuery.includes('as level') || rawUserQuery.includes('sixth form')) {
+                console.log("⚡️ Frontend Override: Detected A-Level, forcing Sixth Form.");
+                aiData.education_level = "Sixth Form";
+            }
+        }
+        
+        // =========================================================
+        // REST OF THE LOGIC (Now uses the corrected education_level)
+        // =========================================================
+
+        // 1. UI Reset
         const quickFilters = document.querySelector('.quick-filters-scroll');
         if (quickFilters) quickFilters.style.display = 'none';
 
@@ -655,22 +677,27 @@ document.addEventListener("DOMContentLoaded", async () => {
             chipsContainer.innerHTML = ''; 
             if (aiResetLink) aiResetLink.style.display = 'inline-block';
             
-            // 🚨 NEW CHIP LOGIC: Simply iterate the returned string array
             const returnedChips = aiData.user_chips || [];
             returnedChips.forEach(text => {
                 const chip = document.createElement('div');
                 chip.className = 'ai-chip';
-                // Using a generic sparkle emoji for all, since backend returns plain strings
                 chip.innerHTML = `<span class="emoji">✨</span> ${text}`;
                 chipsContainer.appendChild(chip);
             });
+
+            // This will now appear because we forced aiData.education_level above!
+            if (aiData.education_level) {
+                 const levelChip = document.createElement('div');
+                 levelChip.className = 'ai-chip';
+                 levelChip.innerHTML = `<span class="emoji">🎓</span> Level: ${aiData.education_level}`;
+                 chipsContainer.appendChild(levelChip);
+            }
         }
 
         const existingError = document.getElementById('ai-search-error');
         if (existingError) existingError.remove();
         
-        // --- MAP FILTERS TO DOM ---
-        // (We still need to check the boxes so 'collectFilters' picks them up for the API call)
+        // 2. Reset Filters
         document.querySelectorAll('.filter-container input:checked').forEach(input => input.checked = false);
         searchInputs.forEach(input => input.value = '');
         if (experienceSlider) { experienceSlider.value = 2; experienceValue.textContent = ''; experienceSliderTouched = false; }
@@ -688,6 +715,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return false;
         };
 
+        // 3. Map Basic Fields
         if (aiData.tutoring_mode) {
             const targetMode = aiData.tutoring_mode.toLowerCase();
             const modeCheckboxes = document.querySelectorAll('.filter-group[data-filter-key="preferredTutoringMode"] input[type="checkbox"]');
@@ -715,6 +743,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (genderBox) genderBox.checked = true;
         }
 
+        // 4. Map Sliders
         if (aiData.max_hourly_rate && rateSlider) {
             let targetVal = parseInt(aiData.max_hourly_rate);
             if (targetVal < 100) targetVal = 100;
@@ -727,21 +756,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (experienceSlider) {
             let targetSliderIndex = -1;
-
-            // 1. New Logic: Handle Array of Buckets (e.g. ["6–10 years", "10+ years"])
             if (aiData.experience_buckets && Array.isArray(aiData.experience_buckets) && aiData.experience_buckets.length > 0) {
-                // Find the index for each returned bucket
                 const indices = aiData.experience_buckets
                     .map(bucket => experienceLevels.indexOf(bucket))
                     .filter(i => i !== -1);
                 
-                if (indices.length > 0) {
-                    // Set slider to the LOWEST index found (e.g. 6-10 years)
-                    // The collectFilters logic will automatically include the higher ones.
-                    targetSliderIndex = Math.min(...indices);
-                }
+                if (indices.length > 0) targetSliderIndex = Math.min(...indices);
             } 
-            // 2. Old Logic: Fallback for numeric min_experience_years
             else if (aiData.min_experience_years) {
                 const years = parseInt(aiData.min_experience_years);
                 if (years >= 10) targetSliderIndex = 4;
@@ -751,7 +772,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 else targetSliderIndex = 0;
             }
 
-            // Apply the change to the UI
             if (targetSliderIndex !== -1) {
                 experienceSlider.value = targetSliderIndex;
                 experienceValue.textContent = experienceDisplayLabels[targetSliderIndex];
@@ -760,28 +780,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         // ---------------------------------------------------------
-        // 🆕 UPDATED: Handle Subjects (Array Support)
+        // 5. SMART SUBJECT MAPPING
         // ---------------------------------------------------------
         
-        // 1. Create a unified list (handles both new "subjects" array and old "subject" string)
         const subjectsList = aiData.subjects || (aiData.subject ? [aiData.subject] : []);
 
-        // 2. Loop through each subject found
         subjectsList.forEach(rawSubjectName => {
             let subjectTerm = rawSubjectName.toLowerCase();
             let subjectApplied = false;
             
-            // Handle common alias
             if (subjectTerm === 'english') subjectTerm = 'english - language';
             
-            // Determine which level buckets to look in
             let targetGroups = [];
-            if (aiData.education_level === 'Primary') targetGroups = ['subjectsPrimary'];
-            else if (aiData.education_level === 'Secondary') targetGroups = ['subjectsSecondary'];
+            
+            // This now uses the CORRECTED education_level from the top of this function
+            if (aiData.education_level === 'Secondary') targetGroups = ['subjectsSecondary'];
+            else if (aiData.education_level === 'Primary') targetGroups = ['subjectsPrimary'];
             else if (aiData.education_level === 'Sixth Form') targetGroups = ['subjectsSixthForm'];
             else targetGroups = ['subjectsPrimary', 'subjectsSecondary', 'subjectsSixthForm'];
 
-            // 3. Try EXACT Match
             for (const groupKey of targetGroups) {
                 const checkboxes = document.querySelectorAll(`.filter-group[data-filter-key="${groupKey}"] input[type="checkbox"]`);
                 for (let box of checkboxes) {
@@ -792,7 +809,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             }
 
-            // 4. Try FUZZY Match (if exact failed)
             if (!subjectApplied) {
                 for (const groupKey of targetGroups) {
                     if (applyFuzzyFilter(groupKey, rawSubjectName)) {
@@ -802,15 +818,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             }
 
-            // 5. Handle Missing Categories (Show Warning)
             if (!subjectApplied) {
-                // Add a visual chip to the top
                 const chip = document.createElement('div');
                 chip.className = 'ai-chip';
                 chip.innerHTML = `<span class="emoji">⚠️</span> No category for "${rawSubjectName}"`;
                 if(chipsContainer) chipsContainer.appendChild(chip);
 
-                // Add text warning (only once to prevent stacking)
                 if (!document.getElementById('ai-search-error')) {
                     const noResultsMsg = document.createElement('div');
                     noResultsMsg.id = 'ai-search-error';
@@ -824,8 +837,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         updateAllFilterCounts();
         expandFilteredGroups();
-        
-        // 🚨 TRIGGER FETCH WITH STRICTMODE=FALSE
         applyFilters(true); 
     });
 
