@@ -326,7 +326,7 @@
         const formattedResponseDate = req.responseDate ? formatDate(req.responseDate) : '-';
         let responseHtml;
 
-        // --- Status Logic (Kept mostly the same) ---
+        // --- Status Logic ---
         const tutorResponse = req.tutorResponse ? req.tutorResponse.toLowerCase() : null;
         const requestOutcome = req.requestOutcome ? req.requestOutcome.toLowerCase() : null;
 
@@ -347,32 +347,33 @@
             responseHtml = `<span class="status-badge ${getStatusClass(statusText)}">${escapeHtml(statusText)}</span>`;
         }
 
-        // 🚨 NEW DETAILS HTML GENERATION
+        // 🚨 NEW DETAILS HTML GENERATION (Cleaner & Left Aligned)
         let detailsHtml = '';
         
-        // If we have specific goal data, use the new layout
         if (req.details.goal || req.details.age) {
             detailsHtml = `
-                <div class="req-goal">
-                    <span style="font-size:10px; text-transform:uppercase; color:#a35d5d; display:block;">Main Goal:</span>
-                    ${escapeHtml(req.details.goal || 'No specific goal provided')}
-                </div>
-                <div class="req-grid">
-                    <div class="req-item">
-                        <span class="req-label">Age</span>
-                        <span class="req-val">${escapeHtml(req.details.age || '-')}</span>
+                <div class="req-container">
+                    <div class="req-goal-row">
+                        <span class="req-label-primary">Main Goal</span>
+                        <span class="req-value-primary">${escapeHtml(req.details.goal || 'No specific goal provided')}</span>
                     </div>
-                    <div class="req-item">
-                        <span class="req-label">Curriculum</span>
-                        <span class="req-val">${escapeHtml(req.details.curriculum || '-')}</span>
-                    </div>
-                    <div class="req-item">
-                        <span class="req-label">Type</span>
-                        <span class="req-val">${escapeHtml(req.details.type || '-')}</span>
-                    </div>
-                    <div class="req-item">
-                        <span class="req-label">Availability</span>
-                        <span class="req-val">${escapeHtml(req.details.availability || '-')}</span>
+                    <div class="req-meta-grid">
+                        <div class="req-meta-item">
+                            <span class="req-label">Age</span>
+                            <span class="req-value">${escapeHtml(req.details.age || '-')}</span>
+                        </div>
+                        <div class="req-meta-item">
+                            <span class="req-label">Curriculum</span>
+                            <span class="req-value">${escapeHtml(req.details.curriculum || '-')}</span>
+                        </div>
+                        <div class="req-meta-item">
+                            <span class="req-label">Type</span>
+                            <span class="req-value">${escapeHtml(req.details.type || '-')}</span>
+                        </div>
+                        <div class="req-meta-item">
+                            <span class="req-label">Availability</span>
+                            <span class="req-value">${escapeHtml(req.details.availability || '-')}</span>
+                        </div>
                     </div>
                 </div>
             `;
