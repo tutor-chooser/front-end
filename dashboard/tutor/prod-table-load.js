@@ -221,28 +221,24 @@
               }
 
               if (action === 'Accepted') {
-                    const planName = await getPlanStatusName();
-                    const planNameUpper = planName.toUpperCase();
-                    
-                    const isPro = planNameUpper.includes("PRO");
-                    const isStarter = planNameUpper.includes("STARTER");
-                    
-                    const acceptModalPara = acceptModal.querySelector('p');
-                    
-                    // 🚀 Updated Dynamic Pricing Logic
-                    if (isPro) {
-                        acceptModalPara.innerHTML = "As a <b>Pro Member</b>, this consultation is free. By accepting, your contact details will be shared with the parent.";
-                    } else if (isStarter) {
-                        acceptModalPara.innerHTML = "By accepting, a one-time consultation fee of <b>100 AED</b> (Starter Discount) will be charged to you. Your contact details will then be shared with the parent.";
-                    } else {
-                        // Fallback for FREE plan or any other non-pro/non-starter plan
-                        acceptModalPara.innerHTML = "By accepting, a one-time consultation fee of <b>150 AED</b> will be charged to you. Your contact details will then be shared with the parent.";
-                    }
-                    
-                    acceptConfirmBtn.dataset.requestId = requestId;
-                    acceptModal.classList.add('visible');
-                    document.getElementById('accept-confirm-overlay').classList.add('visible');
-                }
+                  const isPro = await isProUser();
+                  const acceptModalPara = acceptModal.querySelector('p');
+                  
+                  // 🚀 Dynamic Message: Adjust based on plan
+                  if (isPro) {
+                      acceptModalPara.innerHTML = "As a <b>Pro Member</b>, this consultation is free. By accepting, your contact details will be shared with the parent.";
+                  } else {
+                      acceptModalPara.innerHTML = "By accepting, a one-time consultation fee of <b>150 AED</b> will be charged to you. Your contact details will then be shared with the parent.";
+                  }
+                  
+                  acceptConfirmBtn.dataset.requestId = requestId;
+                  acceptModal.classList.add('visible');
+                  document.getElementById('accept-confirm-overlay').classList.add('visible');
+              } else {
+                  declineConfirmBtn.dataset.requestId = requestId;
+                  declineModal.classList.add('visible');
+                  document.getElementById('decline-confirm-overlay').classList.add('visible');
+              }
           }
 
           // Handle modal CONFIRMATION clicks
