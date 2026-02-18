@@ -489,7 +489,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             };
 
             if (tutor.id) {
-                card.href = `/view-tutor?id=${tutor.id}`;
+                card.href = `/tutor-finder/view-tutor?id=${tutor.id}`;
                 
                 // Add a wrapper function to handle both state saving and tracking
                 card.addEventListener('click', (e) => {
