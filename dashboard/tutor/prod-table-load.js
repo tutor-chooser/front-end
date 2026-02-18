@@ -220,7 +220,7 @@
                   return;
               }
 
-              iif (action === 'Accepted') {
+              if (action === 'Accepted') {
                     const planName = await getPlanStatusName();
                     const planNameUpper = planName.toUpperCase();
                     
