@@ -1,4 +1,3 @@
-<script>
 (function() {
     const CONFIG = {
         getMeetingsUrl: 'https://tc-production-meetings.tutorchooser.workers.dev/get-meetings?limit=4',
@@ -434,4 +433,3 @@
         return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     }
 })();
-</script>
