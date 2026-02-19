@@ -1,3 +1,4 @@
+<script>
 (function() {
     const CONFIG = {
         getMeetingsUrl: 'https://tc-production-meetings.tutorchooser.workers.dev/get-meetings?limit=4',
@@ -20,7 +21,6 @@
     const planModal = document.getElementById('plan-required-modal');
     
     // --- INITIALIZATION ---
-    // --- UPDATED INITIALIZATION ---
     (async () => {
         try {
             await window.$memberstackDom.getCurrentMember();
@@ -72,25 +72,6 @@
         const token = await window.$memberstackDom.getMemberCookie();
         if (!token) throw new Error('Could not retrieve Memberstack token.');
         return token;
-    }
-
-    async function isProUser() {
-        try {
-            const member = await window.$memberstackDom.getCurrentMember();
-            const tutorId = member?.data?.customFields["tutor-id"];
-            if (!tutorId) return false;
-
-            const token = await getAuthToken();
-            const query = `query($itemId: ID!) { items(ids: [$itemId]) { column_values(ids: ["text_mktk7zs4"]) { text } } }`;
-            const response = await fetch(CONFIG.mondayApiUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": token },
-                body: JSON.stringify({ query, variables: { itemId: String(tutorId) } })
-            });
-            const json = await response.json();
-            const planName = json?.data?.items?.[0]?.column_values?.[0]?.text || "";
-            return planName.toUpperCase().includes("PRO");
-        } catch (e) { return false; }
     }
 
     async function checkPlanStatus() {
@@ -214,20 +195,30 @@
           const requestId = button.dataset.requestId;
 
           if (action === 'Accepted' || action === 'Declined') {
-              if (!hasActivePlan) {
+              
+              // Only check for plan if they accept
+              if (action === 'Accepted' && !hasActivePlan) {
                   planModal.classList.add('visible');
                   document.getElementById('plan-required-overlay').classList.add('visible');
                   return;
               }
 
               if (action === 'Accepted') {
-                  const isPro = await isProUser();
+                  const planName = await getPlanStatusName();
+                  const planNameUpper = planName.toUpperCase();
+                  
+                  const isPro = planNameUpper.includes("PRO");
+                  const isStarter = planNameUpper.includes("STARTER");
+                  
                   const acceptModalPara = acceptModal.querySelector('p');
                   
-                  // 🚀 Dynamic Message: Adjust based on plan
+                  // 🚀 Updated Dynamic Pricing Logic
                   if (isPro) {
                       acceptModalPara.innerHTML = "As a <b>Pro Member</b>, this consultation is free. By accepting, your contact details will be shared with the parent.";
+                  } else if (isStarter) {
+                      acceptModalPara.innerHTML = "By accepting, a one-time consultation fee of <b>100 AED</b> (Starter Discount) will be charged to you. Your contact details will then be shared with the parent.";
                   } else {
+                      // Fallback for FREE plan or any other non-pro/non-starter plan
                       acceptModalPara.innerHTML = "By accepting, a one-time consultation fee of <b>150 AED</b> will be charged to you. Your contact details will then be shared with the parent.";
                   }
                   
@@ -235,6 +226,7 @@
                   acceptModal.classList.add('visible');
                   document.getElementById('accept-confirm-overlay').classList.add('visible');
               } else {
+                  // Decline Logic (Unchanged)
                   declineConfirmBtn.dataset.requestId = requestId;
                   declineModal.classList.add('visible');
                   document.getElementById('decline-confirm-overlay').classList.add('visible');
@@ -442,3 +434,4 @@
         return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     }
 })();
+</script>
