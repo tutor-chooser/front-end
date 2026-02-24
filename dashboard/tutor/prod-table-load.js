@@ -3,7 +3,7 @@
         getMeetingsUrl: 'https:/api-production-meetings.tutorchooser.ae/get-meetings?limit=4',
         confirmUrl: 'https://api-production-stripe.tutorchooser.ae/confirm-consultation',
         declineUrl: 'https://api-production-stripe.tutorchooser.ae/decline-consultation',
-        mondayApiUrl: 'https://production.tutorchooser.ae/'  
+        mondayApiUrl: 'https://api-production.tutorchooser.ae/'  
     };
 
     const tableBody = document.getElementById('table-body');
