@@ -1,9 +1,9 @@
 (function() {
     const CONFIG = {
-        getMeetingsUrl: 'https://tc-production-meetings.tutorchooser.workers.dev/get-meetings?limit=4',
-        confirmUrl: 'https://tc-production-stripe.tutorchooser.workers.dev/confirm-consultation',
-        declineUrl: 'https://tc-production-stripe.tutorchooser.workers.dev/decline-consultation',
-        mondayApiUrl: 'https://production.tutorchooser.workers.dev/'  
+        getMeetingsUrl: 'https:/api-production-meetings.tutorchooser.ae/get-meetings?limit=4',
+        confirmUrl: 'https://api-production-stripe.tutorchooser.ae/confirm-consultation',
+        declineUrl: 'https://api-production-stripe.tutorchooser.ae/decline-consultation',
+        mondayApiUrl: 'https://production.tutorchooser.ae/'  
     };
 
     const tableBody = document.getElementById('table-body');
