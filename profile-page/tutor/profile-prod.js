@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
         URLS: {
             STRIPE_WORKER: "https://api-production-stripe.tutorchooser.ae/create-checkout-session",
             FILE_UPLOAD_WORKER: "https://api-production-file-upload.tutorchooser.ae/",
-            MONDAY_API: "https://production.tutorchooser.ae",
+            MONDAY_API: "https://api-production.tutorchooser.ae",
             PROFILE_WORKER: "https://api-production-profile.tutorchooser.ae",
             COMPLETION_WORKER: "https://api-production-profile.tutorchooser.ae/completion"
         },
