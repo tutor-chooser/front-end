@@ -6,11 +6,11 @@ document.addEventListener("DOMContentLoaded", function () {
      */
     const CONFIG = {
         URLS: {
-            STRIPE_WORKER: "https://tc-production-stripe.tutorchooser.workers.dev/create-checkout-session",
-            FILE_UPLOAD_WORKER: "https://tc-production-file-upload.tutorchooser.workers.dev/",
-            MONDAY_API: "https://production.tutorchooser.workers.dev",
-            PROFILE_WORKER: "https://tc-production-profile.tutorchooser.workers.dev",
-            COMPLETION_WORKER: "https://tc-production-profile.tutorchooser.workers.dev/completion"
+            STRIPE_WORKER: "https://api-production-stripe.tutorchooser.ae/create-checkout-session",
+            FILE_UPLOAD_WORKER: "https://api-production-file-upload.tutorchooser.ae/",
+            MONDAY_API: "https://production.tutorchooser.ae",
+            PROFILE_WORKER: "https://api-production-profile.tutorchooser.ae",
+            COMPLETION_WORKER: "https://api-production-profile.tutorchooser.ae/completion"
         },
         // Complete mapping of your Monday.com column IDs
         COLS: {
