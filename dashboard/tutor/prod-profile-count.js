@@ -6,11 +6,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const content = document.getElementById("profile-views-content");
     const numberElement = document.getElementById("profile-views-number");
 
+    // Helper function to print exact error on screen
+    function showErrorOnScreen(errorText) {
+        if (numberElement) {
+            numberElement.textContent = "⚠️"; // Change big number to a warning icon
+            numberElement.style.fontSize = "3rem"; // Scale it down so it fits
+        }
+        
+        // Find the label underneath and replace it with the diagnostic text
+        const labelEl = content ? content.querySelector('.stats-card__label') : null;
+        if (labelEl) {
+            labelEl.innerHTML = `
+                Could not load views.<br>
+                <span style="display:inline-block; margin-top:8px; font-size:11px; color:#781212; font-family:monospace; word-wrap:break-word; text-transform:none; line-height:1.2;">
+                    Diag: ${errorText}
+                </span>
+            `;
+        }
+    }
+
     // 2. Async function to fetch the live data
     async function fetchProfileViews() {
         if (!window.$memberstackDom) {
             console.error("Memberstack is not available.");
-            if (numberElement) numberElement.textContent = "Error";
+            showErrorOnScreen("Memberstack script blocked or not loaded.");
+            if(loader) loader.style.display = 'none';
+            if(content) content.style.display = 'block';
             return;
         }
 
@@ -18,16 +39,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if(content) content.style.display = 'none';
 
         try {
-            // --- THIS BLOCK IS NOW LIVE ---
-
             // A. Get the auth token and tutor ID from Memberstack
             const authToken = await window.$memberstackDom.getMemberCookie();
             const member = await window.$memberstackDom.getCurrentMember();
             const tutorId = member?.data?.customFields["tutor-id"];
 
-            if (!authToken || !tutorId) {
-                throw new Error("Could not retrieve tutor credentials. Please ensure you are logged in.");
-            }
+            // Check if credentials are missing
+            if (!authToken) throw new Error("Missing auth token (Cookie blocked?)");
+            if (!tutorId) throw new Error("Missing tutor-id in Memberstack data");
 
             // B. Construct the final URL with the tutor's ID
             const STATS_WORKER_URL = `https://tc-production-tutor-profile.tutorchooser.workers.dev/tutor/${tutorId}`;
@@ -41,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             
             if (!response.ok) {
-                throw new Error(`Failed to fetch stats. Server responded with ${response.status}`);
+                throw new Error(`Server status: ${response.status}`);
             }
             
             const data = await response.json();
@@ -54,9 +73,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         } catch (error) {
             console.error("Error fetching profile views:", error);
-            if (numberElement) {
-                numberElement.textContent = "Error"; // Show an error state
-            }
+            // Pass the raw technical browser error to our UI helper
+            showErrorOnScreen(error.message || error.toString() || "Unknown Fetch Error");
         } finally {
             // E. Hide the loader and show the content
             if(loader) loader.style.display = 'none';
