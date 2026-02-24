@@ -49,7 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!tutorId) throw new Error("Missing tutor-id in Memberstack data");
 
             // B. Construct the final URL with the tutor's ID
-            const STATS_WORKER_URL = `https://tc-production-tutor-profile.tutorchooser.workers.dev/tutor/${tutorId}`;
+            // const STATS_WORKER_URL = `https://tc-production-tutor-profile.tutorchooser.workers.dev/tutor/${tutorId}`;
+            const STATS_WORKER_URL = `https://api-production-tutor-profile.tutorchooser.ae/tutor/${tutorId}`;
             
             // C. Make the real fetch call to your worker
             const response = await fetch(STATS_WORKER_URL, {
