@@ -280,7 +280,7 @@
     function renderTable(requests, isInitialLoad) {
         if (isInitialLoad) tableBody.innerHTML = '';
         if (isInitialLoad && (!requests || requests.length === 0)) {
-            showState('empty', 'You have no active requests.');
+            showState('empty', 'You have no active requests. When a new request arrives, you will be notified immediately by email.');
             loadMoreBtn.style.display = 'none';
             return;
         }
