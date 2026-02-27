@@ -1,6 +1,6 @@
 (function () {
     const CONFIG = {
-        getRequestsUrl: 'https://tc-staging-meetings.tutorchooser.workers.dev/get-meetings?limit=4',
+        getRequestsUrl: 'https://api-staging-meetings.tutorchooser.ae/get-meetings?limit=4',
     };
 
     const tableBody = document.getElementById('table-body');

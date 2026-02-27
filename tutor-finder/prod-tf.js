@@ -369,7 +369,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         // 🚨 ADD PARAM IF AI CONTEXT
         const queryParams = isAiContext ? '&strictMode=false' : '';
-        const url = 'https://tc-production-vector-search.tutorchooser.workers.dev/filter?limit=9' + queryParams;
+        const url = 'https://api-production-vector-search.tutorchooser.ae/filter?limit=9' + queryParams;
         
         const body = { ...filters };
         if (cursor) body.cursor = cursor;

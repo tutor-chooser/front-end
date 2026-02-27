@@ -1,9 +1,9 @@
 (function() {
     const CONFIG = {
-        getMeetingsUrl: 'https://tc-production-meetings.tutorchooser.workers.dev/get-meetings?limit=4',
-        confirmUrl: 'https://tc-production-stripe.tutorchooser.workers.dev/confirm-consultation',
-        declineUrl: 'https://tc-production-stripe.tutorchooser.workers.dev/decline-consultation',
-        mondayApiUrl: 'https://production.tutorchooser.workers.dev/'  
+        getMeetingsUrl: 'https://api-production-meetings.tutorchooser.ae/get-meetings?limit=4',
+        confirmUrl: 'https://api-production-stripe.tutorchooser.ae/confirm-consultation',
+        declineUrl: 'https://api-production-stripe.tutorchooser.ae/decline-consultation',
+        mondayApiUrl: 'https://api-production.tutorchooser.ae/'  
     };
 
     const tableBody = document.getElementById('table-body');
@@ -280,7 +280,7 @@
     function renderTable(requests, isInitialLoad) {
         if (isInitialLoad) tableBody.innerHTML = '';
         if (isInitialLoad && (!requests || requests.length === 0)) {
-            showState('empty', 'You have no active requests.');
+            showState('empty', 'You have no active requests. When a new request arrives, you will be notified immediately by email.');
             loadMoreBtn.style.display = 'none';
             return;
         }
