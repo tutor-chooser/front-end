@@ -679,8 +679,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         const applyFuzzyFilter = (groupKey, searchText) => {
             if (!searchText) return false;
             const checkboxes = document.querySelectorAll(`.filter-group[data-filter-key="${groupKey}"] input[type="checkbox"]`);
+            const searchLower = searchText.toLowerCase();
+
+            // Phase 1: Try for an EXACT match first
             for (let box of checkboxes) {
-                if (box.value.toLowerCase().includes(searchText.toLowerCase()) || searchText.toLowerCase().includes(box.value.toLowerCase())) {
+                if (box.value.toLowerCase() === searchLower) {
+                    box.checked = true;
+                    return true;
+                }
+            }
+
+            // Phase 2: Try for a FUZZY match only if exact failed
+            for (let box of checkboxes) {
+                const boxLower = box.value.toLowerCase();
+                if (boxLower.includes(searchLower) || searchLower.includes(boxLower)) {
                     box.checked = true;
                     return true;
                 }
